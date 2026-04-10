@@ -1,5 +1,8 @@
 package com.uqpay.sdk.banking.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 public class ListBeneficiariesRequest {
 
     private int pageSize; // Required. Items per page, range: 10-100
@@ -69,20 +72,28 @@ public class ListBeneficiariesRequest {
             sb.append("page_number=").append(pageNumber).append("&");
         }
         if (entityType != null && !entityType.isEmpty()) {
-            sb.append("entity_type=").append(entityType).append("&");
+            sb.append("entity_type=").append(encode(entityType)).append("&");
         }
         if (nickname != null && !nickname.isEmpty()) {
-            sb.append("nickname=").append(nickname).append("&");
+            sb.append("nickname=").append(encode(nickname)).append("&");
         }
         if (currency != null && !currency.isEmpty()) {
-            sb.append("currency=").append(currency).append("&");
+            sb.append("currency=").append(encode(currency)).append("&");
         }
         if (companyName != null && !companyName.isEmpty()) {
-            sb.append("company_name=").append(companyName).append("&");
+            sb.append("company_name=").append(encode(companyName)).append("&");
         }
         if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '&') {
             sb.setLength(sb.length() - 1);
         }
         return sb.length() > 0 ? "?" + sb : "";
+    }
+
+    private static String encode(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            return value;
+        }
     }
 }

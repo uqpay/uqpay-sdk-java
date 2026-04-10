@@ -13,6 +13,8 @@ import com.uqpay.sdk.common.UqpayException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public final class BeneficiariesService {
@@ -103,7 +105,13 @@ public final class BeneficiariesService {
                                                           @Nullable RequestOptions options) throws UqpayException {
         Objects.requireNonNull(currency, "currency must not be null");
         Objects.requireNonNull(country, "country must not be null");
-        String query = "?currency=" + currency + "&country=" + country;
+        String query;
+        try {
+            query = "?currency=" + URLEncoder.encode(currency, StandardCharsets.UTF_8.name())
+                    + "&country=" + URLEncoder.encode(country, StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            query = "?currency=" + currency + "&country=" + country;
+        }
         return apiClient.get("/v1/beneficiaries/paymentmethods" + query,
                 ListPaymentMethodsResponse.class, options);
     }

@@ -3,6 +3,7 @@ package com.uqpay.sdk.issuing;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.uqpay.sdk.common.UqpayException;
 import com.uqpay.sdk.issuing.model.AuthDecisionConfig;
 import com.uqpay.sdk.issuing.model.AuthDecisionRequest;
 import com.uqpay.sdk.issuing.model.AuthDecisionResponse;
@@ -40,9 +41,9 @@ public class AuthDecisionService {
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    private PGPSecretKeyRingCollection secretKeyRings;
-    private String passphrase;
-    private PGPPublicKey uqpayPublicKey;
+    private volatile PGPSecretKeyRingCollection secretKeyRings;
+    private volatile String passphrase;
+    private volatile PGPPublicKey uqpayPublicKey;
 
     public AuthDecisionService() {
     }
@@ -58,25 +59,31 @@ public class AuthDecisionService {
      * @throws IOException  if a key file cannot be read
      * @throws PGPException if a key cannot be parsed
      */
-    public void configure(AuthDecisionConfig config) throws IOException, PGPException {
-        this.passphrase = config.getPassphrase();
+    public void configure(AuthDecisionConfig config) throws UqpayException {
+        try {
+            this.passphrase = config.getPassphrase();
 
-        String privateKeyContent = resolveKeyContent(config.getPrivateKey());
-        try (InputStream is = PGPUtil.getDecoderStream(
-                new ByteArrayInputStream(privateKeyContent.getBytes(StandardCharsets.UTF_8)))) {
-            this.secretKeyRings = new PGPSecretKeyRingCollection(is, new JcaKeyFingerprintCalculator());
-        }
+            String privateKeyContent = resolveKeyContent(config.getPrivateKey());
+            try (InputStream is = PGPUtil.getDecoderStream(
+                    new ByteArrayInputStream(privateKeyContent.getBytes(StandardCharsets.UTF_8)))) {
+                this.secretKeyRings = new PGPSecretKeyRingCollection(is, new JcaKeyFingerprintCalculator());
+            }
 
-        String publicKeyContent = resolveKeyContent(config.getUqpayPublicKey());
-        try (InputStream is = PGPUtil.getDecoderStream(
-                new ByteArrayInputStream(publicKeyContent.getBytes(StandardCharsets.UTF_8)))) {
-            PGPPublicKeyRingCollection publicKeyRings = new PGPPublicKeyRingCollection(
-                    is, new JcaKeyFingerprintCalculator());
-            this.uqpayPublicKey = findFirstEncryptionKey(publicKeyRings);
-        }
+            String publicKeyContent = resolveKeyContent(config.getUqpayPublicKey());
+            try (InputStream is = PGPUtil.getDecoderStream(
+                    new ByteArrayInputStream(publicKeyContent.getBytes(StandardCharsets.UTF_8)))) {
+                PGPPublicKeyRingCollection publicKeyRings = new PGPPublicKeyRingCollection(
+                        is, new JcaKeyFingerprintCalculator());
+                this.uqpayPublicKey = findFirstEncryptionKey(publicKeyRings);
+            }
 
-        if (this.uqpayPublicKey == null) {
-            throw new PGPException("No encryption-capable public key found in uqpayPublicKey");
+            if (this.uqpayPublicKey == null) {
+                throw new UqpayException("No encryption-capable public key found in uqpayPublicKey");
+            }
+        } catch (UqpayException e) {
+            throw e;
+        } catch (IOException | PGPException e) {
+            throw new UqpayException("Failed to configure AuthDecisionService: " + e.getMessage(), e);
         }
     }
 
@@ -93,33 +100,37 @@ public class AuthDecisionService {
      * @throws PGPException if PGP operations fail
      */
     public String processRequest(String encryptedBody, AuthDecisionHandler handler)
-            throws IOException, PGPException {
+            throws UqpayException {
         if (secretKeyRings == null || uqpayPublicKey == null) {
             throw new IllegalStateException(
                     "AuthDecisionService is not configured. Call configure(AuthDecisionConfig) first.");
         }
 
-        // 1. Decrypt
-        String plainJson = decrypt(encryptedBody);
+        try {
+            // 1. Decrypt
+            String plainJson = decrypt(encryptedBody);
 
-        // 2. Parse
-        AuthDecisionRequest request = MAPPER.readValue(plainJson, AuthDecisionRequest.class);
+            // 2. Parse
+            AuthDecisionRequest request = MAPPER.readValue(plainJson, AuthDecisionRequest.class);
 
-        // 3. Business logic
-        AuthDecisionResponse response = handler.decide(request);
+            // 3. Business logic
+            AuthDecisionResponse response = handler.decide(request);
 
-        // 4. Serialize
-        String responseJson = MAPPER.writeValueAsString(response);
+            // 4. Serialize
+            String responseJson = MAPPER.writeValueAsString(response);
 
-        // 5. Encrypt with UQPAY's public key
-        return encrypt(responseJson, uqpayPublicKey);
+            // 5. Encrypt with UQPAY's public key
+            return encrypt(responseJson, uqpayPublicKey);
+        } catch (IOException | PGPException e) {
+            throw new UqpayException("Failed to process auth decision request: " + e.getMessage(), e);
+        }
     }
 
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
 
-    private String resolveKeyContent(String keyOrPath) throws IOException {
+    private String resolveKeyContent(String keyOrPath) throws IOException, UqpayException {
         String lower = keyOrPath.trim().toLowerCase();
         if (lower.endsWith(".asc") || lower.endsWith(".pgp") || lower.endsWith(".gpg")) {
             return new String(Files.readAllBytes(Paths.get(keyOrPath.trim())), StandardCharsets.UTF_8);

@@ -1,5 +1,8 @@
 package com.uqpay.sdk.banking.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 public class ListVirtualAccountsRequest {
 
     // Required. Number of items per page, range: 10-100
@@ -45,11 +48,19 @@ public class ListVirtualAccountsRequest {
             sb.append("page_number=").append(pageNumber).append("&");
         }
         if (currency != null && !currency.isEmpty()) {
-            sb.append("currency=").append(currency).append("&");
+            sb.append("currency=").append(encode(currency)).append("&");
         }
         if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '&') {
             sb.setLength(sb.length() - 1);
         }
         return sb.length() > 0 ? "?" + sb : "";
+    }
+
+    private static String encode(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            return value;
+        }
     }
 }

@@ -3,11 +3,15 @@ package com.uqpay.sdk.webhook.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BeneficiaryData {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     // =========================================================================
     // Beneficiary status constants
@@ -99,8 +103,7 @@ public class BeneficiaryData {
             return null;
         }
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(beneficiaryAddress, BeneficiaryAddress.class);
+            return OBJECT_MAPPER.readValue(beneficiaryAddress, BeneficiaryAddress.class);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to parse beneficiary address: " + e.getMessage(), e);
         }
@@ -111,8 +114,7 @@ public class BeneficiaryData {
             return null;
         }
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(beneficiaryBankDetails, BeneficiaryBankDetails.class);
+            return OBJECT_MAPPER.readValue(beneficiaryBankDetails, BeneficiaryBankDetails.class);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to parse beneficiary bank details: " + e.getMessage(), e);
         }

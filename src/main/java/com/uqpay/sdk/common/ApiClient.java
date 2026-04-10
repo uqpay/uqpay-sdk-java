@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -315,7 +317,11 @@ public final class ApiClient {
 
         String url = getBaseUrl() + path;
         if (notes != null && !notes.isEmpty()) {
-            url += "?notes=" + notes;
+            try {
+                url += "?notes=" + URLEncoder.encode(notes, StandardCharsets.UTF_8.name());
+            } catch (IOException e) {
+                throw new UqpayException("Failed to encode notes parameter: " + e.getMessage(), e);
+            }
         }
 
         String token = resolveToken(options);
@@ -468,13 +474,16 @@ public final class ApiClient {
             throw new UqpayApiException(null, null, statusCode);
         }
 
+        String rawBody = null;
         try {
-            String responseJson = responseBody.string();
-            UqpayApiException apiException = objectMapper.readValue(responseJson, UqpayApiException.class);
+            rawBody = responseBody.string();
+            UqpayApiException apiException = objectMapper.readValue(rawBody, UqpayApiException.class);
             apiException.setStatusCode(statusCode);
             throw apiException;
         } catch (IOException e) {
-            throw new UqpayApiException(null, "Request failed with status " + statusCode, statusCode);
+            throw new UqpayApiException(null,
+                    "Request failed with status " + statusCode + (rawBody != null ? ": " + rawBody : ""),
+                    statusCode);
         }
     }
 }

@@ -1,5 +1,8 @@
 package com.uqpay.sdk.issuing.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 public class ListCardsRequest {
 
     private int pageSize; // required; 10-100, default 10
@@ -60,17 +63,25 @@ public class ListCardsRequest {
             sb.append("page_number=").append(pageNumber).append("&");
         }
         if (cardNumber != null && !cardNumber.isEmpty()) {
-            sb.append("card_number=").append(cardNumber).append("&");
+            sb.append("card_number=").append(encode(cardNumber)).append("&");
         }
         if (cardStatus != null && !cardStatus.isEmpty()) {
-            sb.append("card_status=").append(cardStatus).append("&");
+            sb.append("card_status=").append(encode(cardStatus)).append("&");
         }
         if (cardholderId != null && !cardholderId.isEmpty()) {
-            sb.append("cardholder_id=").append(cardholderId).append("&");
+            sb.append("cardholder_id=").append(encode(cardholderId)).append("&");
         }
         if (sb.length() > 0 && sb.charAt(sb.length() - 1) == '&') {
             sb.setLength(sb.length() - 1);
         }
         return sb.length() > 0 ? "?" + sb : "";
+    }
+
+    private static String encode(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            return value;
+        }
     }
 }
