@@ -56,8 +56,7 @@ public class AuthDecisionService {
      * content directly.
      *
      * @param config the auth decision configuration containing private and public keys
-     * @throws IOException  if a key file cannot be read
-     * @throws PGPException if a key cannot be parsed
+     * @throws UqpayException if a key file cannot be read or a key cannot be parsed
      */
     public void configure(AuthDecisionConfig config) throws UqpayException {
         try {
@@ -96,8 +95,7 @@ public class AuthDecisionService {
      * @param encryptedBody the armored PGP-encrypted request body
      * @param handler       the business logic handler that decides approve/decline
      * @return armored PGP-encrypted response ciphertext
-     * @throws IOException  if I/O operations fail
-     * @throws PGPException if PGP operations fail
+     * @throws UqpayException if decryption, parsing, or encryption fails
      */
     public String processRequest(String encryptedBody, AuthDecisionHandler handler)
             throws UqpayException {
