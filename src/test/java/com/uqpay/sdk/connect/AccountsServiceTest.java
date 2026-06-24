@@ -1,9 +1,11 @@
 package com.uqpay.sdk.connect;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uqpay.sdk.connect.model.CreateAccountRequest;
 import com.uqpay.sdk.connect.model.EntityType;
 import com.uqpay.sdk.connect.model.ListAccountsRequest;
 import com.uqpay.sdk.connect.model.PersonDetails;
+import com.uqpay.sdk.connect.model.SubAccountIndividualInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -122,6 +124,42 @@ class AccountsServiceTest {
             assertThat(request.getPersonDetails()).isNotNull();
             assertThat(request.getPersonDetails().getFirstNameEnglish()).isEqualTo("John");
             assertThat(request.getPersonDetails().getLastNameEnglish()).isEqualTo("Doe");
+        }
+    }
+
+    @Nested
+    @DisplayName("SubAccountIndividualInfo required-field serialization")
+    class SubAccountIndividualInfoSerialization {
+
+        private final ObjectMapper mapper = new ObjectMapper();
+
+        @Test
+        @DisplayName("should serialize the breaking-change individual_info fields with snake_case keys")
+        void shouldSerializeNewRequiredFields() throws Exception {
+            SubAccountIndividualInfo info = new SubAccountIndividualInfo();
+            // Required effective 2026-03-19
+            info.setEmploymentStatus("Employed");
+            info.setIndustry("Information Technology/IT");
+            info.setJobTitle("Business and administration professionals");
+            info.setCompanyName("Acme Corp.");
+            // Required effective 2026-07-02
+            info.setGender("MALE");
+            info.setAnnualIncome("85000");
+            // state is required by spec; apartment_suite_or_floor is optional
+            info.setState("Singapore");
+            info.setApartmentSuiteOrFloor("Unit 1");
+
+            String json = mapper.writeValueAsString(info);
+
+            assertThat(json)
+                    .contains("\"employment_status\":\"Employed\"")
+                    .contains("\"industry\":\"Information Technology/IT\"")
+                    .contains("\"job_title\":\"Business and administration professionals\"")
+                    .contains("\"company_name\":\"Acme Corp.\"")
+                    .contains("\"gender\":\"MALE\"")
+                    .contains("\"annual_income\":\"85000\"")
+                    .contains("\"state\":\"Singapore\"")
+                    .contains("\"apartment_suite_or_floor\":\"Unit 1\"");
         }
     }
 }

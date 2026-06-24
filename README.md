@@ -17,14 +17,14 @@ Official Java SDK for the [UQPAY API](https://developer.uqpay.com/api/#/) — a 
 <dependency>
     <groupId>com.uqpay.sdk</groupId>
     <artifactId>uqpay-sdk-java</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-implementation 'com.uqpay.sdk:uqpay-sdk-java:1.0.0'
+implementation 'com.uqpay.sdk:uqpay-sdk-java:1.1.0'
 ```
 
 ## Quick Start
