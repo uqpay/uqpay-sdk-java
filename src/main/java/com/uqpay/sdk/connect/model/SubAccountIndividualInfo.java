@@ -35,6 +35,13 @@ public class SubAccountIndividualInfo {
     @JsonProperty("date_of_birth")
     private String dateOfBirth;
 
+    /**
+     * Individual's gender. One of {@code MALE} or {@code FEMALE}.
+     * Required for individual SubAccounts created on or after 2026-07-02.
+     */
+    @JsonProperty("gender")
+    private String gender;
+
     @JsonProperty("country_or_territory")
     private String countryOrTerritory;
 
@@ -52,6 +59,45 @@ public class SubAccountIndividualInfo {
 
     @JsonProperty("postal_code")
     private String postalCode;
+
+    /**
+     * The individual's current employment status. One of: {@code Employed},
+     * {@code Self-Employed}, {@code Unemployed}, {@code Student}, {@code Retired},
+     * {@code Homemaker}, {@code Other}.
+     * Required for individual SubAccounts created on or after 2026-03-19.
+     */
+    @JsonProperty("employment_status")
+    private String employmentStatus;
+
+    /**
+     * The industry in which the individual works. See the Enum Reference for
+     * accepted values.
+     * Required for individual SubAccounts created on or after 2026-03-19.
+     */
+    @JsonProperty("industry")
+    private String industry;
+
+    /**
+     * The individual's job title or role. See the Enum Reference for accepted
+     * values.
+     * Required for individual SubAccounts created on or after 2026-03-19.
+     */
+    @JsonProperty("job_title")
+    private String jobTitle;
+
+    /**
+     * The name of the company or organization the individual works for.
+     * Required for individual SubAccounts created on or after 2026-03-19.
+     */
+    @JsonProperty("company_name")
+    private String companyName;
+
+    /**
+     * Individual's annual income, denominated in USD (e.g. {@code "85000"}).
+     * Required for individual SubAccounts created on or after 2026-07-02.
+     */
+    @JsonProperty("annual_income")
+    private String annualIncome;
 
     public SubAccountIndividualInfo() {
     }
@@ -120,6 +166,14 @@ public class SubAccountIndividualInfo {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public String getCountryOrTerritory() {
         return countryOrTerritory;
     }
@@ -166,5 +220,45 @@ public class SubAccountIndividualInfo {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public String getEmploymentStatus() {
+        return employmentStatus;
+    }
+
+    public void setEmploymentStatus(String employmentStatus) {
+        this.employmentStatus = employmentStatus;
+    }
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(String industry) {
+        this.industry = industry;
+    }
+
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getAnnualIncome() {
+        return annualIncome;
+    }
+
+    public void setAnnualIncome(String annualIncome) {
+        this.annualIncome = annualIncome;
     }
 }
