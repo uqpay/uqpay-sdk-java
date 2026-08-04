@@ -14,6 +14,7 @@ import java.util.Objects;
 public final class ConnectClient {
 
     private final AccountsService accounts;
+    private final RfisService rfis;
 
     /**
      * Creates a new ConnectClient.
@@ -23,6 +24,7 @@ public final class ConnectClient {
     public ConnectClient(@NotNull ApiClient apiClient) {
         Objects.requireNonNull(apiClient, "apiClient must not be null");
         this.accounts = new AccountsService(apiClient);
+        this.rfis = new RfisService(apiClient);
     }
 
     /**
@@ -33,5 +35,10 @@ public final class ConnectClient {
     @NotNull
     public AccountsService getAccounts() {
         return accounts;
+    }
+
+    @NotNull
+    public RfisService getRfis() {
+        return rfis;
     }
 }

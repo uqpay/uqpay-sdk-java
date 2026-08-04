@@ -14,6 +14,7 @@ public final class PaymentClient {
     private final BalancesService balances;
     private final PayoutsService payouts;
     private final BankAccountsService bankAccounts;
+    private final TerminalsService terminals;
 
     public PaymentClient(@NotNull ApiClient apiClient) {
         Objects.requireNonNull(apiClient, "apiClient must not be null");
@@ -24,6 +25,7 @@ public final class PaymentClient {
         this.balances = new BalancesService(apiClient);
         this.payouts = new PayoutsService(apiClient);
         this.bankAccounts = new BankAccountsService(apiClient);
+        this.terminals = new TerminalsService(apiClient);
     }
 
     @NotNull
@@ -59,6 +61,11 @@ public final class PaymentClient {
     @NotNull
     public BankAccountsService getBankAccounts() {
         return bankAccounts;
+    }
+
+    @NotNull
+    public TerminalsService getTerminals() {
+        return terminals;
     }
 
 }
