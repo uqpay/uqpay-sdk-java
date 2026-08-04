@@ -24,6 +24,7 @@ import com.uqpay.sdk.issuing.model.SecureCardInfo;
 import com.uqpay.sdk.issuing.model.SetPINRequest;
 import com.uqpay.sdk.issuing.model.SetPINResponse;
 import com.uqpay.sdk.issuing.model.UpdateCardStatusRequest;
+import com.uqpay.sdk.issuing.model.CardCapabilityModels;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -275,5 +276,103 @@ public final class CardsService {
                                                @Nullable RequestOptions options) throws UqpayException {
         Objects.requireNonNull(request, "request must not be null");
         return apiClient.post("/v1/issuing/cards/bulk", request, BulkCardCreationResponse.class, options);
+    }
+
+    @NotNull
+    public CardCapabilityModels.ElevateLimitResponse elevateLimit(
+            @NotNull String cardId, @NotNull CardCapabilityModels.ElevateLimitRequest request)
+            throws UqpayException {
+        return elevateLimit(cardId, request, null);
+    }
+
+    @NotNull
+    public CardCapabilityModels.ElevateLimitResponse elevateLimit(
+            @NotNull String cardId, @NotNull CardCapabilityModels.ElevateLimitRequest request,
+            @Nullable RequestOptions options) throws UqpayException {
+        Objects.requireNonNull(cardId, "cardId must not be null");
+        Objects.requireNonNull(request, "request must not be null");
+        return apiClient.post("/v1/issuing/cards/" + cardId + "/elevate_limit", request,
+                CardCapabilityModels.ElevateLimitResponse.class, options);
+    }
+
+    @NotNull
+    public CardCapabilityModels.NetworkProtectionResponse enrollNetworkProtection(
+            @NotNull String cardId, @NotNull CardCapabilityModels.EnrollNetworkProtectionRequest request)
+            throws UqpayException {
+        return enrollNetworkProtection(cardId, request, null);
+    }
+
+    @NotNull
+    public CardCapabilityModels.NetworkProtectionResponse enrollNetworkProtection(
+            @NotNull String cardId, @NotNull CardCapabilityModels.EnrollNetworkProtectionRequest request,
+            @Nullable RequestOptions options) throws UqpayException {
+        Objects.requireNonNull(cardId, "cardId must not be null");
+        Objects.requireNonNull(request, "request must not be null");
+        return apiClient.post("/v1/issuing/cards/" + cardId + "/risk", request,
+                CardCapabilityModels.NetworkProtectionResponse.class, options);
+    }
+
+    @NotNull
+    public CardCapabilityModels.NetworkProtectionResponse removeNetworkProtection(
+            @NotNull String cardId, @NotNull CardCapabilityModels.RemoveNetworkProtectionRequest request)
+            throws UqpayException {
+        return removeNetworkProtection(cardId, request, null);
+    }
+
+    @NotNull
+    public CardCapabilityModels.NetworkProtectionResponse removeNetworkProtection(
+            @NotNull String cardId, @NotNull CardCapabilityModels.RemoveNetworkProtectionRequest request,
+            @Nullable RequestOptions options) throws UqpayException {
+        Objects.requireNonNull(cardId, "cardId must not be null");
+        Objects.requireNonNull(request, "request must not be null");
+        return apiClient.delete("/v1/issuing/cards/" + cardId + "/risk", request,
+                CardCapabilityModels.NetworkProtectionResponse.class, options);
+    }
+
+    @NotNull
+    public CardCapabilityModels.ManagePinResponse managePin(
+            @NotNull CardCapabilityModels.ManagePinRequest request) throws UqpayException {
+        return managePin(request, null);
+    }
+
+    @NotNull
+    public CardCapabilityModels.ManagePinResponse managePin(
+            @NotNull CardCapabilityModels.ManagePinRequest request,
+            @Nullable RequestOptions options) throws UqpayException {
+        Objects.requireNonNull(request, "request must not be null");
+        return apiClient.post("/v1/issuing/cards/manage/pin", request,
+                CardCapabilityModels.ManagePinResponse.class, options);
+    }
+
+    @NotNull
+    public CardCapabilityModels.CardArtsResponse listArts(@Nullable String cardProductId)
+            throws UqpayException {
+        return listArts(cardProductId, null);
+    }
+
+    @NotNull
+    public CardCapabilityModels.CardArtsResponse listArts(@Nullable String cardProductId,
+                                                          @Nullable RequestOptions options)
+            throws UqpayException {
+        String path = "/v1/issuing/cards/arts";
+        if (cardProductId != null && !cardProductId.isEmpty()) {
+            path += "?card_product_id=" + cardProductId;
+        }
+        return apiClient.get(path, CardCapabilityModels.CardArtsResponse.class, options);
+    }
+
+    @NotNull
+    public CardCapabilityModels.SetDefaultArtResponse setDefaultArt(
+            @NotNull CardCapabilityModels.SetDefaultArtRequest request) throws UqpayException {
+        return setDefaultArt(request, null);
+    }
+
+    @NotNull
+    public CardCapabilityModels.SetDefaultArtResponse setDefaultArt(
+            @NotNull CardCapabilityModels.SetDefaultArtRequest request,
+            @Nullable RequestOptions options) throws UqpayException {
+        Objects.requireNonNull(request, "request must not be null");
+        return apiClient.post("/v1/issuing/cards/arts/default", request,
+                CardCapabilityModels.SetDefaultArtResponse.class, options);
     }
 }

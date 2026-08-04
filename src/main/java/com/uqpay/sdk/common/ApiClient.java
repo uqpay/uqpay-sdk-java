@@ -36,6 +36,7 @@ public final class ApiClient {
     private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
     private static final String HEADER_AUTH_TOKEN = "x-auth-token"; // Required; authentication token from /v1/connect/token
+    private static final String HEADER_CLIENT_ID = "x-client-id"; // Required by Payment APIs; sourced from SDK configuration
     private static final String HEADER_IDEMPOTENCY_KEY = "x-idempotency-key"; // UUID; auto-generated if not provided; cached for 24 hours
     private static final String HEADER_ON_BEHALF_OF = "x-on-behalf-of"; // Optional; UQPAY sub-account ID for connected account requests
     private static final String HEADER_ACCEPT = "Accept";
@@ -231,6 +232,13 @@ public final class ApiClient {
         return execute("DELETE", path, null, responseType, options);
     }
 
+    /** Sends a DELETE request with a JSON body and custom options. */
+    @NotNull
+    public <T> T delete(@NotNull String path, @Nullable Object body, @NotNull Class<T> responseType,
+                        @Nullable RequestOptions options) throws UqpayException {
+        return execute("DELETE", path, body, responseType, options);
+    }
+
     // =========================================================================
     // Raw methods (for binary data)
     // =========================================================================
@@ -267,6 +275,7 @@ public final class ApiClient {
                 .get()
                 .header(HEADER_ACCEPT, "application/octet-stream")
                 .header(HEADER_AUTH_TOKEN, BEARER_PREFIX + token)
+                .header(HEADER_CLIENT_ID, config.getClientId())
                 .header(HEADER_IDEMPOTENCY_KEY, idempotencyKey);
 
         if (options != null && options.getOnBehalfOf() != null) {
@@ -339,6 +348,7 @@ public final class ApiClient {
                 .url(url)
                 .post(requestBody)
                 .header(HEADER_AUTH_TOKEN, BEARER_PREFIX + token)
+                .header(HEADER_CLIENT_ID, config.getClientId())
                 .header(HEADER_IDEMPOTENCY_KEY, idempotencyKey);
 
         if (options != null && options.getOnBehalfOf() != null) {
@@ -407,6 +417,7 @@ public final class ApiClient {
                 .url(url)
                 .header(HEADER_CONTENT_TYPE, "application/json")
                 .header(HEADER_AUTH_TOKEN, BEARER_PREFIX + token)
+                .header(HEADER_CLIENT_ID, config.getClientId())
                 .header(HEADER_IDEMPOTENCY_KEY, idempotencyKey);
 
         if (options != null && options.getOnBehalfOf() != null) {

@@ -6,6 +6,7 @@ import com.uqpay.sdk.common.UqpayException;
 import com.uqpay.sdk.issuing.model.ListTransactionsRequest;
 import com.uqpay.sdk.issuing.model.ListTransactionsResponse;
 import com.uqpay.sdk.issuing.model.Transaction;
+import com.uqpay.sdk.issuing.model.CardCapabilityModels;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,5 +45,20 @@ public final class TransactionsService {
         Objects.requireNonNull(request, "request must not be null");
         String queryString = request.toQueryString();
         return apiClient.get("/v1/issuing/transactions" + queryString, ListTransactionsResponse.class, options);
+    }
+
+    @NotNull
+    public CardCapabilityModels.ClaimUnsolicitedRefundResponse claimUnsolicitedRefund(
+            @NotNull CardCapabilityModels.ClaimUnsolicitedRefundRequest request) throws UqpayException {
+        return claimUnsolicitedRefund(request, null);
+    }
+
+    @NotNull
+    public CardCapabilityModels.ClaimUnsolicitedRefundResponse claimUnsolicitedRefund(
+            @NotNull CardCapabilityModels.ClaimUnsolicitedRefundRequest request,
+            @Nullable RequestOptions options) throws UqpayException {
+        Objects.requireNonNull(request, "request must not be null");
+        return apiClient.post("/v1/issuing/transactions/unsolicited_refund/release", request,
+                CardCapabilityModels.ClaimUnsolicitedRefundResponse.class, options);
     }
 }

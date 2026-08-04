@@ -16,6 +16,7 @@ public final class IssuingClient {
     private final ReportsService reports;
     private final DownloadCenterService downloadCenter;
     private final AuthDecisionService authDecision;
+    private final MerchantBrandsService merchantBrands;
 
     public IssuingClient(@NotNull ApiClient apiClient) {
         Objects.requireNonNull(apiClient, "apiClient must not be null");
@@ -28,6 +29,7 @@ public final class IssuingClient {
         this.reports = new ReportsService(apiClient);
         this.downloadCenter = new DownloadCenterService(apiClient);
         this.authDecision = new AuthDecisionService();
+        this.merchantBrands = new MerchantBrandsService(apiClient);
     }
 
     @NotNull
@@ -73,5 +75,10 @@ public final class IssuingClient {
     @NotNull
     public AuthDecisionService getAuthDecision() {
         return authDecision;
+    }
+
+    @NotNull
+    public MerchantBrandsService getMerchantBrands() {
+        return merchantBrands;
     }
 }
