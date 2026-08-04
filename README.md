@@ -11,21 +11,26 @@ Official Java SDK for the [UQPAY API](https://developer.uqpay.com/api/#/) — a 
 
 ## Installation
 
-### Maven
+The Java SDK is distributed as a thin JAR through
+[GitHub Releases](https://github.com/uqpay/uqpay-sdk-java/releases). It is not
+published to Maven Central, so `com.uqpay.sdk:uqpay-sdk-java:1.2.0` cannot be
+resolved from a public Maven repository.
 
-```xml
-<dependency>
-    <groupId>com.uqpay.sdk</groupId>
-    <artifactId>uqpay-sdk-java</artifactId>
-    <version>1.1.0</version>
-</dependency>
+Download `uqpay-sdk-java-1.2.0.jar` from the `v1.2.0` GitHub Release and install
+it into your local Maven repository:
+
+```bash
+mvn install:install-file \
+  -Dfile=uqpay-sdk-java-1.2.0.jar \
+  -DgroupId=com.uqpay.sdk \
+  -DartifactId=uqpay-sdk-java \
+  -Dversion=1.2.0 \
+  -Dpackaging=jar
 ```
 
-### Gradle
-
-```groovy
-implementation 'com.uqpay.sdk:uqpay-sdk-java:1.1.0'
-```
+You can then reference the locally installed artifact from Maven or Gradle. Because
+this is a thin JAR, your project must also declare the runtime dependencies listed
+in this repository's `pom.xml`, including Jackson, OkHttp, and Bouncy Castle.
 
 ## Quick Start
 
