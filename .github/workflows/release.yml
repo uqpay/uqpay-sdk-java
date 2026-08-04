@@ -100,7 +100,7 @@ jobs:
           body: |
             ## Release ${{ github.ref_name }}
 
-            Java artifacts are attached to this GitHub Release. Maven Central distribution is tracked separately and is not yet available.
+            Java artifacts are attached to this GitHub Release. This SDK is not distributed through Maven Central; install the thin JAR locally and declare its runtime dependencies in your project.
 
             For a temporary local Maven installation:
 
