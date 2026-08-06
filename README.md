@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Official Java SDK for the [UQPAY API](https://developer.uqpay.com/api/#/) — a comprehensive payment and card issuing platform.
+Official Java SDK for the [UQPAY API](https://developers.uqpay.com/).
 
 ## Requirements
 
@@ -46,7 +46,7 @@ UqpayClient client = UqpayClient.production("your-client-id", "your-api-key");
 
 ## Authentication
 
-The SDK handles OAuth2 authentication automatically. It fetches an access token using your `clientId` and `apiKey`, caches it, and refreshes it before expiry. You do not need to manage tokens manually.
+The SDK handles authentication automatically. It retrieves a UQPAY Access Token using your `clientId` and `apiKey`, caches it, and retrieves a new Token before the current one expires. You do not need to manage Tokens manually.
 
 ## Resources
 
@@ -479,14 +479,16 @@ UqpayClient client = new UqpayClient(config);
 
 ### Environment Variables
 
-For local development, create a `.env` file in the project root:
+Store credentials in your environment and pass them explicitly when you create the client. The SDK does not load environment variables or `.env` files automatically.
 
-```
-UQPAY_CLIENT_ID=your-sandbox-client-id
-UQPAY_API_KEY=your-sandbox-api-key
+```java
+UqpayClient client = UqpayClient.sandbox(
+    System.getenv("UQPAY_CLIENT_ID"),
+    System.getenv("UQPAY_API_KEY")
+);
 ```
 
-> The `.env` file is git-ignored and must never be committed. Obtain sandbox credentials from the [UQPAY Developer Portal](https://developer.uqpay.com).
+Never commit API keys to source control. For local development, use your runtime or secret-management tooling to populate the environment.
 
 ## API Coverage
 
@@ -563,9 +565,9 @@ mvn test -DSKIP_INTEGRATION_TESTS=true
 
 ```
 uqpay-sdk-java/
-├── src/main/java/com/uqpay/sdk/v2/
+├── src/main/java/com/uqpay/sdk/
 │   ├── UqpayClient.java           # Main entry point
-│   ├── auth/                      # OAuth2 token management
+│   ├── auth/                      # UQPAY Access Token management
 │   ├── banking/                   # Banking API
 │   ├── common/                    # Shared HTTP client, exceptions
 │   ├── config/                    # Configuration and environments
@@ -575,7 +577,7 @@ uqpay-sdk-java/
 │   ├── simulator/                 # Sandbox simulator
 │   ├── supporting/                # File upload/download
 │   └── webhook/                   # Webhook verification and event parsing
-└── src/test/java/com/uqpay/sdk/v2/
+└── src/test/java/com/uqpay/sdk/
     ├── banking/                   # Banking integration tests
     ├── connect/                   # Connect integration tests
     ├── issuing/                   # Issuing integration tests (incl. KYC)
@@ -587,7 +589,7 @@ uqpay-sdk-java/
 
 ## Documentation
 
-- [UQPAY API Reference](https://developer.uqpay.com/api/#/)
+- [UQPAY API Reference](https://developers.uqpay.com/)
 
 ## License
 
