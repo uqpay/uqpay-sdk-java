@@ -403,6 +403,13 @@ public class Event {
         return EVENT_NAME_VIRTUAL.equals(eventName);
     }
 
+    public boolean isVirtualAccountApplicationEvent() {
+        return EVENT_NAME_VIRTUAL.equals(eventName)
+                && (EVENT_TYPE_VIRTUAL_ACCOUNT_CREATE.equals(eventType)
+                || EVENT_TYPE_VIRTUAL_ACCOUNT_UPDATE.equals(eventType)
+                || EVENT_TYPE_VIRTUAL_ACCOUNT_CLOSED.equals(eventType));
+    }
+
     public boolean isRfiEvent() {
         return EVENT_NAME_RFI.equals(eventName);
     }
@@ -542,10 +549,14 @@ public class Event {
     }
 
     public VirtualAccountEventData parseVirtualAccountData() {
-        if (!isVirtualAccountEvent()) {
-            throw new IllegalStateException("Event type " + eventType + " is not a virtual account event");
+        if (!isVirtualAccountApplicationEvent()) {
+            throw new IllegalStateException("Event type " + eventType + " is not a virtual account application event");
         }
-        return parseData(VirtualAccountEventData.class);
+        VirtualAccountEventData application = parseData(VirtualAccountEventData.class);
+        if (sourceId != null && !sourceId.equals(application.getApplicationId())) {
+            throw new IllegalStateException("Virtual account event source_id must equal application_id");
+        }
+        return application;
     }
 
     public TransferEventData parseTransferData() {

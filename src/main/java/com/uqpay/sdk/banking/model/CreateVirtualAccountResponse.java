@@ -6,18 +6,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateVirtualAccountResponse {
 
-    // Always returns "SUCCESS"; actual status is delivered via webhooks
-    @JsonProperty("message")
-    private String message;
+    @JsonProperty("data")
+    private VirtualAccountApplication data;
 
     public CreateVirtualAccountResponse() {
     }
 
-    public String getMessage() {
-        return message;
+    public VirtualAccountApplication getData() {
+        return data;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setData(VirtualAccountApplication data) {
+        this.data = data;
     }
 }

@@ -29,6 +29,9 @@ public class UqpayApiException extends UqpayException {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("type")
+    private String type;
+
     @JsonProperty("code")
     private String code; // Error code, e.g. "invalid_number", "too_many_requests"
 
@@ -56,6 +59,15 @@ public class UqpayApiException extends UqpayException {
         this.code = code;
         this.errorMessage = message;
         this.statusCode = statusCode;
+    }
+
+    @Nullable
+    public String getType() {
+        return type;
+    }
+
+    public void setType(@Nullable String type) {
+        this.type = type;
     }
 
     private static String formatMessage(String code, String message, int statusCode) {
@@ -132,6 +144,17 @@ public class UqpayApiException extends UqpayException {
      */
     public boolean isBadRequest() {
         return statusCode == 400;
+    }
+
+    /**
+     * Returns true for the intentionally non-disclosing Virtual Account application
+     * not-found contract. This API reports both missing and cross-account resources as
+     * HTTP 400 with the same type and code.
+     */
+    public boolean isVirtualAccountApplicationNotFound() {
+        return statusCode == 400
+                && "not_found".equals(type)
+                && "virtual_account_application_not_found".equals(code);
     }
 
     /**

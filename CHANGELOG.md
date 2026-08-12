@@ -5,6 +5,26 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Replaced the Virtual Account Create request/response contract with the application contract:
+  required `country`, single-value `currency`, optional `LOCAL`/`SWIFT` method and nickname,
+  explicit idempotency and connected-account request options, and the complete application DTO.
+- Virtual Account application webhooks now parse the same application DTO for
+  `virtual.account.create`, `virtual.account.update`, and `virtual.account.closed`; consumers can
+  reconcile out-of-order delivery with `application_id` and `public_version`.
+
+### Added
+
+- List and Retrieve Virtual Account Application operations and precise application summary,
+  result, error, bank-detail, clearing-system, status, and payment-method models.
+- Strict three-field Virtual Account API errors expose `type`, `code`, and `message`, including
+  the intentional HTTP 400 missing/cross-account application contract.
+
+The existing List Virtual Accounts operation remains available and distinct from List Applications.
+
 ## [1.2.0]
 
 This bootstrap alignment release establishes the shared stable `1.2` capability

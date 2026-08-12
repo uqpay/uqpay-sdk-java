@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class RequestOptions {
 
-    private final String idempotencyKey; // Optional; UUID format; auto-generated if not set; cached by API for 24 hours
+    private final String idempotencyKey; // Optional; up to 64 characters; auto-generated if not set
     private final String authToken; // Optional; overrides TokenProvider token for this request
     private final String onBehalfOf; // Optional; UQPAY sub-account ID for connected account delegation
 
@@ -51,7 +51,8 @@ public final class RequestOptions {
     /**
      * Returns the idempotency key.
      * <p>
-     * If not specified, a UUID will be generated automatically for each request.
+     * If not specified, a UUID will be generated automatically for each request. Supply an
+     * explicit key when a request may need a deterministic idempotent replay.
      * </p>
      *
      * @return the idempotency key, or null if not specified
