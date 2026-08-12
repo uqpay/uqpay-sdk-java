@@ -1246,6 +1246,32 @@ class EventTest {
                 }
             }
         }
+
+        @Test
+        @DisplayName("should parse terminal provisioning failure result")
+        void shouldParseTerminalProvisioningFailureResult() {
+            String json = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
+                    + "\"event_type\":\"virtual.account.update\",\"event_id\":\"evt-failed\","
+                    + "\"source_id\":\"app-failed\",\"data\":{\"application_id\":\"app-failed\","
+                    + "\"public_version\":2,\"country\":\"SG\",\"currency\":\"USD\","
+                    + "\"status\":\"FAILED\",\"results\":[{\"payment_method\":\"SWIFT\","
+                    + "\"status\":\"FAILED\",\"virtual_accounts\":[],\"error\":{"
+                    + "\"code\":\"VA_PROVISIONING_FAILED\","
+                    + "\"message\":\"Virtual account provisioning failed\"}}]}}";
+
+            Event event = Event.fromJson(json);
+            VirtualAccountEventData application = event.parseVirtualAccountData();
+
+            assertThat(application.getStatus().name()).isEqualTo("FAILED");
+            assertThat(application.getPublicVersion()).isEqualTo(2);
+            assertThat(application.getResults()).hasSize(1);
+            assertThat(application.getResults().get(0).getStatus().name()).isEqualTo("FAILED");
+            assertThat(application.getResults().get(0).getVirtualAccounts()).isEmpty();
+            assertThat(application.getResults().get(0).getError().getCode())
+                    .isEqualTo("VA_PROVISIONING_FAILED");
+            assertThat(application.getResults().get(0).getError().getMessage())
+                    .isEqualTo("Virtual account provisioning failed");
+        }
     }
 
     // =========================================================================
