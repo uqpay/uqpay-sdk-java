@@ -71,6 +71,18 @@ class WebhookVerifierTest {
         }
 
         @Test
+        @DisplayName("should accept the millisecond timestamp emitted by Webhook Hub")
+        void shouldAcceptWebhookHubMillisecondTimestamp() throws Exception {
+            WebhookVerifier verifier = new WebhookVerifier(TEST_SECRET);
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String signature = computeSignature(VALID_PAYLOAD, timestamp, TEST_SECRET);
+
+            Event event = verifier.verifyAndParse(VALID_PAYLOAD, signature, timestamp);
+
+            assertThat(event.getEventId()).isEqualTo("evt_verify_1");
+        }
+
+        @Test
         @DisplayName("should work with a custom tolerance")
         void shouldWorkWithCustomTolerance() throws Exception {
             // Use a 600-second custom tolerance — still within range for current time

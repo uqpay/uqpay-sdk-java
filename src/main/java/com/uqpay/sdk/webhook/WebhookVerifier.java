@@ -40,8 +40,9 @@ public final class WebhookVerifier {
             throw new UqpayWebhookException("Invalid webhook timestamp: " + timestampHeader);
         }
 
+        long timestampSeconds = timestamp >= 1_000_000_000_000L ? timestamp / 1000 : timestamp;
         long currentTime = System.currentTimeMillis() / 1000;
-        if (Math.abs(currentTime - timestamp) > toleranceSeconds) {
+        if (Math.abs(currentTime - timestampSeconds) > toleranceSeconds) {
             throw new UqpayWebhookException("Webhook timestamp is outside tolerance window");
         }
 

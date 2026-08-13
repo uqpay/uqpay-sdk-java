@@ -10,6 +10,13 @@ import com.uqpay.sdk.banking.model.CreateVirtualAccountRequest;
 import com.uqpay.sdk.banking.model.CreateVirtualAccountResponse;
 import com.uqpay.sdk.banking.model.ListVirtualAccountsRequest;
 import com.uqpay.sdk.banking.model.ListVirtualAccountsResponse;
+import com.uqpay.sdk.banking.model.ListVirtualAccountApplicationsRequest;
+import com.uqpay.sdk.banking.model.ListVirtualAccountApplicationsResponse;
+import com.uqpay.sdk.banking.model.RetrieveVirtualAccountApplicationResponse;
+import com.uqpay.sdk.banking.model.VirtualAccountPaymentMethod;
+import com.uqpay.sdk.common.RequestOptions;
+
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -93,30 +100,34 @@ class VirtualAccountsServiceIntegrationTest {
         @DisplayName("should create virtual account")
         void shouldCreateVirtualAccount() throws UqpayException {
             CreateVirtualAccountRequest request = new CreateVirtualAccountRequest();
+            request.setCountry("SG");
             request.setCurrency("USD");
-            request.setPaymentMethod("LOCAL");
+            request.setPaymentMethod(VirtualAccountPaymentMethod.LOCAL);
 
-            CreateVirtualAccountResponse response = virtualAccountsService.create(request);
+            CreateVirtualAccountResponse response = virtualAccountsService.create(request,
+                    RequestOptions.withIdempotencyKey(UUID.randomUUID().toString()));
 
             assertThat(response).isNotNull();
-            assertThat(response.getMessage()).isNotNull();
+            assertThat(response.getData()).isNotNull();
 
-            System.out.printf("Create virtual account result: %s%n", response.getMessage());
+            System.out.printf("Created virtual account application: %s%n", response.getData().getApplicationId());
         }
 
         @Test
         @DisplayName("should create virtual account and verify in list")
         void shouldCreateVirtualAccountAndVerifyInList() throws UqpayException {
             CreateVirtualAccountRequest createRequest = new CreateVirtualAccountRequest();
+            createRequest.setCountry("SG");
             createRequest.setCurrency("USD");
-            createRequest.setPaymentMethod("LOCAL");
+            createRequest.setPaymentMethod(VirtualAccountPaymentMethod.LOCAL);
 
-            CreateVirtualAccountResponse created = virtualAccountsService.create(createRequest);
+            CreateVirtualAccountResponse created = virtualAccountsService.create(createRequest,
+                    RequestOptions.withIdempotencyKey(UUID.randomUUID().toString()));
 
             assertThat(created).isNotNull();
-            assertThat(created.getMessage()).isNotNull();
+            assertThat(created.getData()).isNotNull();
 
-            System.out.printf("Create virtual account result: %s%n", created.getMessage());
+            System.out.printf("Created virtual account application: %s%n", created.getData().getApplicationId());
 
             // List virtual accounts to verify
             ListVirtualAccountsRequest listRequest = new ListVirtualAccountsRequest();
@@ -131,18 +142,41 @@ class VirtualAccountsServiceIntegrationTest {
         }
 
         @Test
-        @DisplayName("should create virtual account with multiple currencies")
-        void shouldCreateVirtualAccountWithMultipleCurrencies() throws UqpayException {
+        @DisplayName("should create virtual account while evaluating both methods")
+        void shouldCreateVirtualAccountWhileEvaluatingBothMethods() throws UqpayException {
             CreateVirtualAccountRequest request = new CreateVirtualAccountRequest();
-            request.setCurrency("USD,EUR,GBP");
-            request.setPaymentMethod("LOCAL");
+            request.setCountry("SG");
+            request.setCurrency("USD");
 
-            CreateVirtualAccountResponse response = virtualAccountsService.create(request);
+            CreateVirtualAccountResponse response = virtualAccountsService.create(request,
+                    RequestOptions.withIdempotencyKey(UUID.randomUUID().toString()));
 
             assertThat(response).isNotNull();
-            assertThat(response.getMessage()).isNotNull();
+            assertThat(response.getData()).isNotNull();
+            assertThat(response.getData().getResults()).hasSizeBetween(1, 2);
 
-            System.out.printf("Create multi-currency virtual account result: %s%n", response.getMessage());
+            System.out.printf("Create application result count: %d%n", response.getData().getResults().size());
+        }
+    }
+
+    @Nested
+    @DisplayName("Virtual Account Applications")
+    class VirtualAccountApplications {
+        @Test
+        void shouldListAndRetrieveApplications() throws UqpayException {
+            ListVirtualAccountApplicationsRequest request = new ListVirtualAccountApplicationsRequest();
+            request.setPageNumber(1);
+            request.setPageSize(10);
+
+            ListVirtualAccountApplicationsResponse response = virtualAccountsService.listApplications(request);
+            assertThat(response.getData()).isNotNull();
+
+            if (!response.getData().isEmpty()) {
+                RetrieveVirtualAccountApplicationResponse detail = virtualAccountsService.retrieveApplication(
+                        response.getData().get(0).getApplicationId());
+                assertThat(detail.getData().getApplicationId())
+                        .isEqualTo(response.getData().get(0).getApplicationId());
+            }
         }
     }
 }

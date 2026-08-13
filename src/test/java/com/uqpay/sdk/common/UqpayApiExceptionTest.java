@@ -86,14 +86,16 @@ class UqpayApiExceptionTest {
     @Test
     @DisplayName("should be deserializable from JSON")
     void shouldBeDeserializableFromJson() throws Exception {
-        String json = "{\"code\":\"ERR123\",\"message\":\"Test error message\"}";
+        String json = "{\"type\":\"not_found\",\"code\":\"virtual_account_application_not_found\","
+                + "\"message\":\"Virtual account application not found\"}";
 
         ObjectMapper mapper = new ObjectMapper();
         UqpayApiException exception = mapper.readValue(json, UqpayApiException.class);
         exception.setStatusCode(422);
 
-        assertThat(exception.getCode()).isEqualTo("ERR123");
-        assertThat(exception.getErrorMessage()).isEqualTo("Test error message");
+        assertThat(exception.getType()).isEqualTo("not_found");
+        assertThat(exception.getCode()).isEqualTo("virtual_account_application_not_found");
+        assertThat(exception.getErrorMessage()).isEqualTo("Virtual account application not found");
         assertThat(exception.getStatusCode()).isEqualTo(422);
     }
 

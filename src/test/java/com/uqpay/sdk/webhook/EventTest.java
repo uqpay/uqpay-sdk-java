@@ -1185,23 +1185,92 @@ class EventTest {
                     + "\"event_name\":\"VIRTUAL\","
                     + "\"event_type\":\"virtual.account.create\","
                     + "\"event_id\":\"evt_1\","
+                    + "\"source_id\":\"3175fc6c-b432-44c5-b0f4-ee5fbd049c91\","
                     + "\"data\":{"
-                    + "  \"virtual_account_id\":\"va_789\","
-                    + "  \"account_name\":\"Main Account\","
+                    + "  \"application_id\":\"3175fc6c-b432-44c5-b0f4-ee5fbd049c91\","
+                    + "  \"public_version\":1,"
+                    + "  \"country\":\"SG\","
                     + "  \"currency\":\"SGD\","
-                    + "  \"status\":\"ACTIVE\","
-                    + "  \"payment_method\":\"LOCAL\""
+                    + "  \"status\":\"SUBMITTED\","
+                    + "  \"results\":[{"
+                    + "    \"payment_method\":\"LOCAL\","
+                    + "    \"status\":\"SUBMITTED\","
+                    + "    \"virtual_accounts\":[],"
+                    + "    \"error\":null"
+                    + "  }]"
                     + "}"
                     + "}";
 
             Event event = Event.fromJson(json);
             VirtualAccountEventData data = event.parseVirtualAccountData();
 
-            assertThat(data.getVirtualAccountId()).isEqualTo("va_789");
-            assertThat(data.getAccountName()).isEqualTo("Main Account");
+            assertThat(data.getApplicationId()).isEqualTo(event.getSourceId());
+            assertThat(data.getPublicVersion()).isEqualTo(1);
+            assertThat(data.getCountry()).isEqualTo("SG");
             assertThat(data.getCurrency()).isEqualTo("SGD");
-            assertThat(data.getStatus()).isEqualTo("ACTIVE");
-            assertThat(data.getPaymentMethod()).isEqualTo("LOCAL");
+            assertThat(data.getStatus().name()).isEqualTo("SUBMITTED");
+            assertThat(data.getResults()).hasSize(1);
+            assertThat(data.getResults().get(0).getPaymentMethod().name()).isEqualTo("LOCAL");
+        }
+
+        @Test
+        @DisplayName("should reject mismatched application source ID")
+        void shouldRejectMismatchedApplicationSourceId() {
+            String json = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
+                    + "\"event_type\":\"virtual.account.update\",\"event_id\":\"evt_2\","
+                    + "\"source_id\":\"app-envelope\",\"data\":{\"application_id\":\"app-data\","
+                    + "\"public_version\":2,\"country\":\"SG\",\"currency\":\"USD\","
+                    + "\"status\":\"FAILED\",\"results\":[]}}";
+
+            assertThatThrownBy(() -> Event.fromJson(json).parseVirtualAccountData())
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("source_id must equal application_id");
+        }
+
+        @Test
+        @DisplayName("should parse application data for all mapped webhook versions")
+        void shouldParseAllMappedWebhookVersions() {
+            for (String version : new String[]{"V1.5.1", "V1.5.2", "V1.6.0"}) {
+                for (String eventType : new String[]{"virtual.account.create", "virtual.account.update",
+                        "virtual.account.closed"}) {
+                    String json = "{\"version\":\"" + version + "\",\"event_name\":\"VIRTUAL\","
+                            + "\"event_type\":\"" + eventType + "\",\"event_id\":\"evt-1\","
+                            + "\"source_id\":\"app-1\",\"data\":{\"application_id\":\"app-1\","
+                            + "\"public_version\":2,\"country\":\"SG\",\"currency\":\"USD\","
+                            + "\"status\":\"COMPLETED\",\"results\":[]}}";
+
+                    Event event = Event.fromJson(json);
+                    assertThat(event.parseVirtualAccountData().getApplicationId())
+                            .as("version=%s type=%s", version, eventType)
+                            .isEqualTo("app-1");
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("should parse terminal provisioning failure result")
+        void shouldParseTerminalProvisioningFailureResult() {
+            String json = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
+                    + "\"event_type\":\"virtual.account.update\",\"event_id\":\"evt-failed\","
+                    + "\"source_id\":\"app-failed\",\"data\":{\"application_id\":\"app-failed\","
+                    + "\"public_version\":2,\"country\":\"SG\",\"currency\":\"USD\","
+                    + "\"status\":\"FAILED\",\"results\":[{\"payment_method\":\"SWIFT\","
+                    + "\"status\":\"FAILED\",\"virtual_accounts\":[],\"error\":{"
+                    + "\"code\":\"VA_PROVISIONING_FAILED\","
+                    + "\"message\":\"Virtual account provisioning failed\"}}]}}";
+
+            Event event = Event.fromJson(json);
+            VirtualAccountEventData application = event.parseVirtualAccountData();
+
+            assertThat(application.getStatus().name()).isEqualTo("FAILED");
+            assertThat(application.getPublicVersion()).isEqualTo(2);
+            assertThat(application.getResults()).hasSize(1);
+            assertThat(application.getResults().get(0).getStatus().name()).isEqualTo("FAILED");
+            assertThat(application.getResults().get(0).getVirtualAccounts()).isEmpty();
+            assertThat(application.getResults().get(0).getError().getCode())
+                    .isEqualTo("VA_PROVISIONING_FAILED");
+            assertThat(application.getResults().get(0).getError().getMessage())
+                    .isEqualTo("Virtual account provisioning failed");
         }
     }
 
