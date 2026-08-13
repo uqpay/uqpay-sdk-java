@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unmodified header value.
 - Replaced the Virtual Account Create request/response contract with the application contract:
   required `country`, single-value `currency`, optional `LOCAL`/`SWIFT` method and nickname,
-  explicit idempotency and connected-account request options, and the complete application DTO.
+  continued `x-idempotency-key` and `x-on-behalf-of` request-option passthrough, and the complete
+  application DTO.
 - Virtual Account application webhooks now parse the same application DTO for
   `virtual.account.create`, `virtual.account.update`, and `virtual.account.closed`; consumers can
   reconcile out-of-order delivery with `application_id` and `public_version`.
