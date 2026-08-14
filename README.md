@@ -400,6 +400,8 @@ try {
         VirtualAccountEventData application = event.parseVirtualAccountData();
         // source_id equals application_id. Apply only a public_version newer than
         // the version stored for that application, so out-of-order events are safe.
+        String effectiveAccountId = application.getAccountId();
+        String directAccountId = application.getDirectId();
     }
 } catch (UqpayWebhookException e) {
     // signature invalid or timestamp expired
@@ -412,6 +414,9 @@ For webhook envelope versions `V1.5.1`, `V1.5.2`, and `V1.6.0`, the three
 `virtual.account.create`, `virtual.account.update`, and `virtual.account.closed`
 events use the same complete application data model. `close_reason` is always
 present on each issued bank detail and may still be empty when its status is `CLOSED`.
+The webhook-only required fields `account_id` and `direct_id` identify the effective
+account and its direct (main) account scope. They are not fields in Create, List, or
+Retrieve application responses. JSON field order is not significant when parsing events.
 
 ## Authorization Decision (PGP)
 

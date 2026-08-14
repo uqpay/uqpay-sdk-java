@@ -169,6 +169,21 @@ class VirtualAccountApplicationContractTest {
     }
 
     @Test
+    void gatewayApplicationDtoDoesNotExposeWebhookAccountCorrelationFields() {
+        VirtualAccountApplication application = new VirtualAccountApplication();
+        application.setApplicationId("app-1");
+        application.setPublicVersion(1);
+        application.setCountry("SG");
+        application.setCurrency("USD");
+        application.setStatus(VirtualAccountApplicationStatus.SUBMITTED);
+
+        JsonNode json = mapper.valueToTree(application);
+
+        assertThat(json.has("account_id")).isFalse();
+        assertThat(json.has("direct_id")).isFalse();
+    }
+
+    @Test
     void retrievePreservesStrictHttp400NotFoundError() {
         server.enqueue(new MockResponse().setResponseCode(400)
                 .setHeader("Content-Type", "application/json")

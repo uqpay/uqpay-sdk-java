@@ -1187,6 +1187,8 @@ class EventTest {
                     + "\"event_id\":\"evt_1\","
                     + "\"source_id\":\"3175fc6c-b432-44c5-b0f4-ee5fbd049c91\","
                     + "\"data\":{"
+                    + "  \"account_id\":\"connected-account-id\","
+                    + "  \"direct_id\":\"main-account-id\","
                     + "  \"application_id\":\"3175fc6c-b432-44c5-b0f4-ee5fbd049c91\","
                     + "  \"public_version\":1,"
                     + "  \"country\":\"SG\","
@@ -1205,6 +1207,8 @@ class EventTest {
             VirtualAccountEventData data = event.parseVirtualAccountData();
 
             assertThat(data.getApplicationId()).isEqualTo(event.getSourceId());
+            assertThat(data.getAccountId()).isEqualTo("connected-account-id");
+            assertThat(data.getDirectId()).isEqualTo("main-account-id");
             assertThat(data.getPublicVersion()).isEqualTo(1);
             assertThat(data.getCountry()).isEqualTo("SG");
             assertThat(data.getCurrency()).isEqualTo("SGD");
@@ -1219,6 +1223,7 @@ class EventTest {
             String json = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
                     + "\"event_type\":\"virtual.account.update\",\"event_id\":\"evt_2\","
                     + "\"source_id\":\"app-envelope\",\"data\":{\"application_id\":\"app-data\","
+                    + "\"account_id\":\"account-1\",\"direct_id\":\"direct-1\","
                     + "\"public_version\":2,\"country\":\"SG\",\"currency\":\"USD\","
                     + "\"status\":\"FAILED\",\"results\":[]}}";
 
@@ -1233,18 +1238,52 @@ class EventTest {
             for (String version : new String[]{"V1.5.1", "V1.5.2", "V1.6.0"}) {
                 for (String eventType : new String[]{"virtual.account.create", "virtual.account.update",
                         "virtual.account.closed"}) {
+                    String applicationFields = "\"application_id\":\"app-1\",\"public_version\":2,"
+                            + "\"country\":\"SG\",\"currency\":\"USD\","
+                            + "\"status\":\"COMPLETED\",\"results\":[]";
+                    String data;
+                    if ("V1.5.1".equals(version)) {
+                        data = "\"account_id\":\"account-1\",\"direct_id\":\"direct-1\","
+                                + applicationFields;
+                    } else if ("V1.5.2".equals(version)) {
+                        data = "\"account_id\":\"account-1\"," + applicationFields
+                                + ",\"direct_id\":\"direct-1\"";
+                    } else {
+                        data = applicationFields
+                                + ",\"direct_id\":\"direct-1\",\"account_id\":\"account-1\"";
+                    }
                     String json = "{\"version\":\"" + version + "\",\"event_name\":\"VIRTUAL\","
                             + "\"event_type\":\"" + eventType + "\",\"event_id\":\"evt-1\","
-                            + "\"source_id\":\"app-1\",\"data\":{\"application_id\":\"app-1\","
-                            + "\"public_version\":2,\"country\":\"SG\",\"currency\":\"USD\","
-                            + "\"status\":\"COMPLETED\",\"results\":[]}}";
+                            + "\"source_id\":\"app-1\",\"data\":{" + data + "}}";
 
                     Event event = Event.fromJson(json);
-                    assertThat(event.parseVirtualAccountData().getApplicationId())
+                    VirtualAccountEventData application = event.parseVirtualAccountData();
+                    assertThat(application.getApplicationId())
                             .as("version=%s type=%s", version, eventType)
                             .isEqualTo("app-1");
+                    assertThat(application.getAccountId()).isEqualTo("account-1");
+                    assertThat(application.getDirectId()).isEqualTo("direct-1");
                 }
             }
+        }
+
+        @Test
+        @DisplayName("should require webhook-only account correlation fields")
+        void shouldRequireWebhookOnlyAccountCorrelationFields() {
+            String missingAccountId = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
+                    + "\"event_type\":\"virtual.account.create\",\"source_id\":\"app-1\","
+                    + "\"data\":{\"direct_id\":\"direct-1\",\"application_id\":\"app-1\","
+                    + "\"public_version\":1,\"country\":\"SG\",\"currency\":\"USD\","
+                    + "\"status\":\"SUBMITTED\",\"results\":[]}}";
+            String missingDirectId = missingAccountId.replace("\"direct_id\":\"direct-1\",",
+                    "\"account_id\":\"account-1\",");
+
+            assertThatThrownBy(() -> Event.fromJson(missingAccountId).parseVirtualAccountData())
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("data.account_id is required");
+            assertThatThrownBy(() -> Event.fromJson(missingDirectId).parseVirtualAccountData())
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("data.direct_id is required");
         }
 
         @Test
@@ -1253,6 +1292,7 @@ class EventTest {
             String json = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
                     + "\"event_type\":\"virtual.account.update\",\"event_id\":\"evt-failed\","
                     + "\"source_id\":\"app-failed\",\"data\":{\"application_id\":\"app-failed\","
+                    + "\"account_id\":\"account-1\",\"direct_id\":\"direct-1\","
                     + "\"public_version\":2,\"country\":\"SG\",\"currency\":\"USD\","
                     + "\"status\":\"FAILED\",\"results\":[{\"payment_method\":\"SWIFT\","
                     + "\"status\":\"FAILED\",\"virtual_accounts\":[],\"error\":{"

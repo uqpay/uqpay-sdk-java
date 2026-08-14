@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Restored the required webhook-only `account_id` and `direct_id` correlation fields on
+  `VirtualAccountEventData` for `V1.5.1`, `V1.5.2`, and `V1.6.0` Virtual Account application
+  events. Gateway Create, List, and Retrieve application response models remain unchanged.
+
 ## [2.0.0]
 
 This major release replaces the previous Virtual Account Create and webhook
