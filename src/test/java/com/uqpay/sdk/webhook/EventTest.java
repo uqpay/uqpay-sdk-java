@@ -1268,22 +1268,19 @@ class EventTest {
         }
 
         @Test
-        @DisplayName("should require webhook-only account correlation fields")
-        void shouldRequireWebhookOnlyAccountCorrelationFields() {
-            String missingAccountId = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
-                    + "\"event_type\":\"virtual.account.create\",\"source_id\":\"app-1\","
-                    + "\"data\":{\"direct_id\":\"direct-1\",\"application_id\":\"app-1\","
+        @DisplayName("should tolerate legacy payload without account correlation fields")
+        void shouldTolerateLegacyPayloadWithoutAccountCorrelationFields() {
+            String legacyJson = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
+                    + "\"event_type\":\"virtual.account.update\",\"source_id\":\"app-legacy\","
+                    + "\"data\":{\"application_id\":\"app-legacy\","
                     + "\"public_version\":1,\"country\":\"SG\",\"currency\":\"USD\","
                     + "\"status\":\"SUBMITTED\",\"results\":[]}}";
-            String missingDirectId = missingAccountId.replace("\"direct_id\":\"direct-1\",",
-                    "\"account_id\":\"account-1\",");
 
-            assertThatThrownBy(() -> Event.fromJson(missingAccountId).parseVirtualAccountData())
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("data.account_id is required");
-            assertThatThrownBy(() -> Event.fromJson(missingDirectId).parseVirtualAccountData())
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("data.direct_id is required");
+            VirtualAccountEventData legacy = Event.fromJson(legacyJson).parseVirtualAccountData();
+
+            assertThat(legacy.getApplicationId()).isEqualTo("app-legacy");
+            assertThat(legacy.getAccountId()).isNull();
+            assertThat(legacy.getDirectId()).isNull();
         }
 
         @Test

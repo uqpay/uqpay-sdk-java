@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Restored the required webhook-only `account_id` and `direct_id` correlation fields on
   `VirtualAccountEventData` for `V1.5.1`, `V1.5.2`, and `V1.6.0` Virtual Account application
-  events. Gateway Create, List, and Retrieve application response models remain unchanged.
+  events. Historical or retried payloads that predate the fields remain parseable with `null`
+  getters; newly emitted events still require both fields. Gateway Create, List, and Retrieve
+  application response models remain unchanged.
 
 ## [2.0.0]
 

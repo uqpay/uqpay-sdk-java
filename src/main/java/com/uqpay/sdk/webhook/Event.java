@@ -556,12 +556,6 @@ public class Event {
         if (sourceId != null && !sourceId.equals(application.getApplicationId())) {
             throw new IllegalStateException("Virtual account event source_id must equal application_id");
         }
-        if (application.getAccountId() == null || application.getAccountId().isBlank()) {
-            throw new IllegalStateException("Virtual account event data.account_id is required");
-        }
-        if (application.getDirectId() == null || application.getDirectId().isBlank()) {
-            throw new IllegalStateException("Virtual account event data.direct_id is required");
-        }
         return application;
     }
 
