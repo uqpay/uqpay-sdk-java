@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0]
+
+This major release replaces the previous Virtual Account Create and webhook
+contracts with the Virtual Account application lifecycle contract. Existing
+Virtual Account integrations must migrate before adopting this version.
+
+### Fixed
+
+- Restored the required `account_id` and `direct_id` correlation fields on
+  `VirtualAccountEventData` for `V1.5.1`, `V1.5.2`, and `V1.6.0` Virtual Account application
+  events. Typed parsing rejects events missing either field; generic raw event data remains
+  available for retaining historical/retried payloads that predate them.
+
 ### Changed
 
 - Webhook freshness validation accepts Webhook Hub's Unix-millisecond
@@ -16,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   required `country`, single-value `currency`, optional `LOCAL`/`SWIFT` method and nickname,
   continued `x-idempotency-key` and `x-on-behalf-of` request-option passthrough, and the complete
   application DTO.
+- Added the required application-owner correlation fields to successful REST responses:
+  `account_id` and string `direct_id` on Create/Retrieve details and List summaries. `direct_id`
+  is `"0"` for main-account applications and the main account ID for connected-account applications.
 - Virtual Account application webhooks now parse the same application DTO for
   `virtual.account.create`, `virtual.account.update`, and `virtual.account.closed`; consumers can
   reconcile out-of-order delivery with `application_id` and `public_version`.
@@ -28,6 +44,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the intentional HTTP 400 missing/cross-account application contract.
 
 The existing List Virtual Accounts operation remains available and distinct from List Applications.
+
+### Breaking
+
+- Existing Create Virtual Account callers must add `country`, replace a currency
+  collection with one `currency`, and consume the application response instead
+  of the previous request acknowledgement.
+- Virtual Account webhook consumers must correlate by `application_id`, process
+  complete application data, and use `public_version` for ordering.
+
+### Migration and distribution
+
+- Download `uqpay-sdk-java-2.0.0.jar` from the GitHub `v2.0.0` Release and follow
+  the [Virtual Account migration guide](https://developers.uqpay.com/global-account/v1.6/guide/migrate-to-virtual-account-applications).
+- The artifact remains a thin JAR and is not available from Maven Central. Install
+  it into a local repository and declare Jackson, OkHttp, and Bouncy Castle in the
+  consuming project.
 
 ## [1.2.0]
 

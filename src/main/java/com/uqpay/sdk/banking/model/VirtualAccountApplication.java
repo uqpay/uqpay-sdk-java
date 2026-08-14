@@ -8,6 +8,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VirtualAccountApplication {
     @JsonProperty("application_id") private String applicationId;
+    @JsonProperty("account_id") private String accountId;
+    @JsonProperty("direct_id") private String directId;
     @JsonProperty("public_version") private long publicVersion;
     @JsonProperty("country") private String country;
     @JsonProperty("currency") private String currency;
@@ -16,6 +18,15 @@ public class VirtualAccountApplication {
 
     public String getApplicationId() { return applicationId; }
     public void setApplicationId(String applicationId) { this.applicationId = applicationId; }
+    /** Required. UUID of the account that owns this application. */
+    public String getAccountId() { return accountId; }
+    public void setAccountId(String accountId) { this.accountId = accountId; }
+    /**
+     * Required. Plain string that is {@code "0"} for a main-account application, or the
+     * connected account's main account ID for a connected-account application.
+     */
+    public String getDirectId() { return directId; }
+    public void setDirectId(String directId) { this.directId = directId; }
     public long getPublicVersion() { return publicVersion; }
     public void setPublicVersion(long publicVersion) { this.publicVersion = publicVersion; }
     public String getCountry() { return country; }
