@@ -20,9 +20,8 @@ public class VirtualAccountEventData extends VirtualAccountApplication {
     private String directId;
 
     /**
-     * Required on current events. Account whose Virtual Account application
-     * changed. For connected-account events, this identifies the effective
-     * connected account.
+     * Required on current events. UUID of the account that owns the Virtual
+     * Account application.
      */
     public String getAccountId() {
         return accountId;
@@ -33,8 +32,9 @@ public class VirtualAccountEventData extends VirtualAccountApplication {
     }
 
     /**
-     * Required on current events. Direct (main) account scope associated with
-     * the event.
+     * Required on current events. Plain string that is {@code "0"} when the
+     * application belongs to the main account, or the connected account's main
+     * account ID when the application belongs to a connected account.
      */
     public String getDirectId() {
         return directId;

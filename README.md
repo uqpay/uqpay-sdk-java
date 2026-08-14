@@ -414,9 +414,11 @@ For webhook envelope versions `V1.5.1`, `V1.5.2`, and `V1.6.0`, the three
 `virtual.account.create`, `virtual.account.update`, and `virtual.account.closed`
 events use the same complete application data model. `close_reason` is always
 present on each issued bank detail and may still be empty when its status is `CLOSED`.
-The webhook-only required fields `account_id` and `direct_id` identify the effective
-account and its direct (main) account scope. They are not fields in Create, List, or
-Retrieve application responses. JSON field order is not significant when parsing events.
+The webhook-only required `account_id` is the UUID of the account that owns the
+application. `direct_id` is a plain string: it is `"0"` for a main-account application,
+or the connected account's main account ID for a connected-account application. Neither
+field is part of Create, List, or Retrieve application responses. JSON field order is not
+significant when parsing events.
 Current events must include both fields. `parseVirtualAccountData()` does not tolerate
 either field being absent and rejects an incomplete typed payload. The generic `Event.getData()`
 tree remains available to retain or inspect historical/retried raw payloads emitted before the
