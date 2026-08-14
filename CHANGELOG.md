@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0]
+
+This major release replaces the previous Virtual Account Create and webhook
+contracts with the Virtual Account application lifecycle contract. Existing
+Virtual Account integrations must migrate before adopting this version.
+
 ### Fixed
 
 - Restored the required webhook-only `account_id` and `direct_id` correlation fields on
@@ -14,12 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   events. Typed parsing rejects events missing either field; generic raw event data remains
   available for retaining historical/retried payloads that predate them. Gateway Create, List,
   and Retrieve application response models remain unchanged.
-
-## [2.0.0]
-
-This major release replaces the previous Virtual Account Create and webhook
-contracts with the Virtual Account application lifecycle contract. Existing
-Virtual Account integrations must migrate before adopting this version.
 
 ### Changed
 
