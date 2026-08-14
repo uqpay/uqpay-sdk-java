@@ -417,10 +417,10 @@ present on each issued bank detail and may still be empty when its status is `CL
 The webhook-only required fields `account_id` and `direct_id` identify the effective
 account and its direct (main) account scope. They are not fields in Create, List, or
 Retrieve application responses. JSON field order is not significant when parsing events.
-Current events must include both fields. `parseVirtualAccountData()` nevertheless tolerates
-historical or retried payloads emitted before the fields were restored; in that compatibility
-case the corresponding getters return `null`. This tolerance does not make either field optional
-for newly emitted events.
+Current events must include both fields. `parseVirtualAccountData()` does not tolerate
+either field being absent and rejects an incomplete typed payload. The generic `Event.getData()`
+tree remains available to retain or inspect historical/retried raw payloads emitted before the
+fields were restored; this raw-envelope compatibility does not make either field optional.
 
 ## Authorization Decision (PGP)
 

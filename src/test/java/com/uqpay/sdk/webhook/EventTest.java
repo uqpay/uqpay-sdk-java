@@ -1268,19 +1268,22 @@ class EventTest {
         }
 
         @Test
-        @DisplayName("should tolerate legacy payload without account correlation fields")
-        void shouldTolerateLegacyPayloadWithoutAccountCorrelationFields() {
+        @DisplayName("should retain legacy raw payload but reject typed parsing without correlation fields")
+        void shouldRetainLegacyRawPayloadButRejectTypedParsingWithoutCorrelationFields() {
             String legacyJson = "{\"version\":\"V1.6.0\",\"event_name\":\"VIRTUAL\","
                     + "\"event_type\":\"virtual.account.update\",\"source_id\":\"app-legacy\","
                     + "\"data\":{\"application_id\":\"app-legacy\","
                     + "\"public_version\":1,\"country\":\"SG\",\"currency\":\"USD\","
                     + "\"status\":\"SUBMITTED\",\"results\":[]}}";
 
-            VirtualAccountEventData legacy = Event.fromJson(legacyJson).parseVirtualAccountData();
+            Event legacy = Event.fromJson(legacyJson);
 
-            assertThat(legacy.getApplicationId()).isEqualTo("app-legacy");
-            assertThat(legacy.getAccountId()).isNull();
-            assertThat(legacy.getDirectId()).isNull();
+            assertThat(legacy.getData().get("application_id").asText()).isEqualTo("app-legacy");
+            assertThat(legacy.getData().has("account_id")).isFalse();
+            assertThat(legacy.getData().has("direct_id")).isFalse();
+            assertThatThrownBy(legacy::parseVirtualAccountData)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("data.account_id is required");
         }
 
         @Test
