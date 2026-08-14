@@ -110,12 +110,16 @@ RequestOptions createVaOptions = RequestOptions.builder()
     .build();
 CreateVirtualAccountResponse va = client.banking().getVirtualAccounts().create(createVaReq, createVaOptions);
 VirtualAccountApplication application = va.getData();
+String owningAccountId = application.getAccountId(); // account UUID
+String directId = application.getDirectId();          // "0" for main; main account ID for connected
 
 ListVirtualAccountApplicationsRequest listApplications = new ListVirtualAccountApplicationsRequest();
 listApplications.setPageNumber(1); // required
 listApplications.setPageSize(50);  // required, 1-100
 ListVirtualAccountApplicationsResponse applications =
     client.banking().getVirtualAccounts().listApplications(listApplications);
+String listedOwner = applications.getData().get(0).getAccountId();
+String listedDirectId = applications.getData().get(0).getDirectId();
 RetrieveVirtualAccountApplicationResponse current =
     client.banking().getVirtualAccounts().retrieveApplication(application.getApplicationId());
 
@@ -414,12 +418,12 @@ For webhook envelope versions `V1.5.1`, `V1.5.2`, and `V1.6.0`, the three
 `virtual.account.create`, `virtual.account.update`, and `virtual.account.closed`
 events use the same complete application data model. `close_reason` is always
 present on each issued bank detail and may still be empty when its status is `CLOSED`.
-For typed webhook events, the required `account_id` is the UUID of the account that owns
+For Create and Retrieve details, List summaries, and typed webhook events, the required
+`account_id` is the UUID of the account that owns
 the application. `direct_id` is a plain string: it is `"0"` for a main-account application,
-or the connected account's main account ID for a connected-account application. This SDK
-change is scoped to webhook types. Whether these runtime fields should enter the public REST
-Create, List, and Retrieve contract remains pending confirmation; the current REST public
-models do not expose them. JSON field order is not significant when parsing events.
+or the connected account's main account ID for a connected-account application. Both fields
+are exposed by the shared application detail model and by application list summaries. JSON
+field order is not significant when parsing responses or events.
 Current events must include both fields. `parseVirtualAccountData()` does not tolerate
 either field being absent and rejects an incomplete typed payload. The generic `Event.getData()`
 tree remains available to retain or inspect historical/retried raw payloads emitted before the

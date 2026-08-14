@@ -1,6 +1,5 @@
 package com.uqpay.sdk.webhook.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.uqpay.sdk.banking.model.VirtualAccountApplication;
 
 /**
@@ -13,34 +12,4 @@ import com.uqpay.sdk.banking.model.VirtualAccountApplication;
  * those correlation fields.
  */
 public class VirtualAccountEventData extends VirtualAccountApplication {
-    @JsonProperty("account_id")
-    private String accountId;
-
-    @JsonProperty("direct_id")
-    private String directId;
-
-    /**
-     * Required on current events. UUID of the account that owns the Virtual
-     * Account application.
-     */
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
-
-    /**
-     * Required on current events. Plain string that is {@code "0"} when the
-     * application belongs to the main account, or the connected account's main
-     * account ID when the application belongs to a connected account.
-     */
-    public String getDirectId() {
-        return directId;
-    }
-
-    public void setDirectId(String directId) {
-        this.directId = directId;
-    }
 }

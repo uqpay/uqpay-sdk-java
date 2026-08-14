@@ -44,7 +44,8 @@ class VirtualAccountApplicationContractTest {
 
     @Test
     void createNormalizesRequestAndSendsContractHeaders() throws Exception {
-        server.enqueue(jsonResponse("{\"data\":{\"application_id\":\"app-1\",\"public_version\":1,"
+        server.enqueue(jsonResponse("{\"data\":{\"application_id\":\"app-1\","
+                + "\"account_id\":\"connected-account-id\",\"direct_id\":\"main-account-id\",\"public_version\":1,"
                 + "\"country\":\"SG\",\"currency\":\"USD\",\"status\":\"SUBMITTED\","
                 + "\"results\":[{\"payment_method\":\"LOCAL\",\"status\":\"SUBMITTED\","
                 + "\"virtual_accounts\":[],\"error\":null}]}}"));
@@ -73,11 +74,14 @@ class VirtualAccountApplicationContractTest {
         assertThat(body.get("payment_method").asText()).isEqualTo("LOCAL");
         assertThat(body.has("nickname")).isFalse();
         assertThat(response.getData().getApplicationId()).isEqualTo("app-1");
+        assertThat(response.getData().getAccountId()).isEqualTo("connected-account-id");
+        assertThat(response.getData().getDirectId()).isEqualTo("main-account-id");
     }
 
     @Test
     void identicalCreateReplayUsesSameKeyAndReturnsOriginalApplication() throws Exception {
-        String responseJson = "{\"data\":{\"application_id\":\"app-original\",\"public_version\":1,"
+        String responseJson = "{\"data\":{\"application_id\":\"app-original\","
+                + "\"account_id\":\"account-1\",\"direct_id\":\"0\",\"public_version\":1,"
                 + "\"country\":\"SG\",\"currency\":\"USD\",\"status\":\"SUBMITTED\","
                 + "\"results\":[{\"payment_method\":\"SWIFT\",\"status\":\"SUBMITTED\","
                 + "\"virtual_accounts\":[],\"error\":null}]}}";
@@ -94,6 +98,8 @@ class VirtualAccountApplicationContractTest {
 
         assertThat(first.getData().getApplicationId()).isEqualTo("app-original");
         assertThat(replay.getData().getApplicationId()).isEqualTo("app-original");
+        assertThat(first.getData().getAccountId()).isEqualTo("account-1");
+        assertThat(first.getData().getDirectId()).isEqualTo("0");
         assertThat(server.takeRequest().getHeader("x-idempotency-key")).isEqualTo("stable-replay-key");
         assertThat(server.takeRequest().getHeader("x-idempotency-key")).isEqualTo("stable-replay-key");
     }
@@ -116,7 +122,8 @@ class VirtualAccountApplicationContractTest {
     @Test
     void listApplicationsUsesDistinctPathRequiredPaginationAndFilters() throws Exception {
         server.enqueue(jsonResponse("{\"total_pages\":1,\"total_items\":1,\"data\":[{"
-                + "\"application_id\":\"app-1\",\"public_version\":2,\"country\":\"SG\","
+                + "\"application_id\":\"app-1\",\"account_id\":\"account-1\",\"direct_id\":\"0\","
+                + "\"public_version\":2,\"country\":\"SG\","
                 + "\"currency\":\"USD\",\"status\":\"PARTIALLY_COMPLETED\","
                 + "\"created_at\":\"2026-08-12T10:00:00Z\"}]}"));
         ListVirtualAccountApplicationsRequest request = new ListVirtualAccountApplicationsRequest();
@@ -134,6 +141,8 @@ class VirtualAccountApplicationContractTest {
                 + "&status=PARTIALLY_COMPLETED&country=SG&currency=USD");
         assertThat(recorded.getHeader("x-on-behalf-of")).isEqualTo("connected-account-id");
         assertThat(response.getTotalItems()).isEqualTo(1);
+        assertThat(response.getData().get(0).getAccountId()).isEqualTo("account-1");
+        assertThat(response.getData().get(0).getDirectId()).isEqualTo("0");
         assertThat(response.getData().get(0).getCreatedAt().toString()).isEqualTo("2026-08-12T10:00Z");
 
         ListVirtualAccountApplicationsRequest invalid = new ListVirtualAccountApplicationsRequest();
@@ -145,7 +154,8 @@ class VirtualAccountApplicationContractTest {
 
     @Test
     void retrieveParsesCompleteApplicationAndIgnoresUndefinedFields() throws Exception {
-        server.enqueue(jsonResponse("{\"data\":{\"application_id\":\"app-1\",\"public_version\":3,"
+        server.enqueue(jsonResponse("{\"data\":{\"application_id\":\"app-1\","
+                + "\"account_id\":\"connected-account-id\",\"direct_id\":\"main-account-id\",\"public_version\":3,"
                 + "\"country\":\"SG\",\"currency\":\"USD\",\"status\":\"CLOSED\","
                 + "\"undefined_field\":\"ignored\",\"results\":[{\"payment_method\":\"SWIFT\","
                 + "\"status\":\"CLOSED\",\"error\":null,\"virtual_accounts\":[{"
@@ -162,6 +172,8 @@ class VirtualAccountApplicationContractTest {
 
         assertThat(recorded.getPath()).isEqualTo("/v1/virtual/applications/app-1");
         assertThat(response.getData().getPublicVersion()).isEqualTo(3);
+        assertThat(response.getData().getAccountId()).isEqualTo("connected-account-id");
+        assertThat(response.getData().getDirectId()).isEqualTo("main-account-id");
         assertThat(detail.getClearingSystem().getType()).isEqualTo("bic_swift");
         assertThat(detail.getAccountNumber()).isEqualTo("00123");
         assertThat(detail.getStatus()).isEqualTo(VirtualAccountBankDetailStatus.CLOSED);
@@ -169,9 +181,11 @@ class VirtualAccountApplicationContractTest {
     }
 
     @Test
-    void currentRestApplicationDtoDoesNotExposeAccountCorrelationFields() {
+    void restApplicationDtoExposesRequiredAccountCorrelationFields() {
         VirtualAccountApplication application = new VirtualAccountApplication();
         application.setApplicationId("app-1");
+        application.setAccountId("account-1");
+        application.setDirectId("0");
         application.setPublicVersion(1);
         application.setCountry("SG");
         application.setCurrency("USD");
@@ -179,8 +193,8 @@ class VirtualAccountApplicationContractTest {
 
         JsonNode json = mapper.valueToTree(application);
 
-        assertThat(json.has("account_id")).isFalse();
-        assertThat(json.has("direct_id")).isFalse();
+        assertThat(json.get("account_id").asText()).isEqualTo("account-1");
+        assertThat(json.get("direct_id").asText()).isEqualTo("0");
     }
 
     @Test

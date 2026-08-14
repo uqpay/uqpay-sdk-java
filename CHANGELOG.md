@@ -18,9 +18,7 @@ Virtual Account integrations must migrate before adopting this version.
 - Restored the required `account_id` and `direct_id` correlation fields on
   `VirtualAccountEventData` for `V1.5.1`, `V1.5.2`, and `V1.6.0` Virtual Account application
   events. Typed parsing rejects events missing either field; generic raw event data remains
-  available for retaining historical/retried payloads that predate them. This change is scoped
-  to webhook types; whether the runtime fields should enter the public REST Create, List, and
-  Retrieve contract remains pending confirmation.
+  available for retaining historical/retried payloads that predate them.
 
 ### Changed
 
@@ -31,6 +29,9 @@ Virtual Account integrations must migrate before adopting this version.
   required `country`, single-value `currency`, optional `LOCAL`/`SWIFT` method and nickname,
   continued `x-idempotency-key` and `x-on-behalf-of` request-option passthrough, and the complete
   application DTO.
+- Added the required application-owner correlation fields to successful REST responses:
+  `account_id` and string `direct_id` on Create/Retrieve details and List summaries. `direct_id`
+  is `"0"` for main-account applications and the main account ID for connected-account applications.
 - Virtual Account application webhooks now parse the same application DTO for
   `virtual.account.create`, `virtual.account.update`, and `virtual.account.closed`; consumers can
   reconcile out-of-order delivery with `application_id` and `public_version`.
