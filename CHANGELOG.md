@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0]
+
+This major release replaces the previous Virtual Account Create and webhook
+contracts with the Virtual Account application lifecycle contract. Existing
+Virtual Account integrations must migrate before adopting this version.
+
 ### Changed
 
 - Webhook freshness validation accepts Webhook Hub's Unix-millisecond
@@ -28,6 +34,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the intentional HTTP 400 missing/cross-account application contract.
 
 The existing List Virtual Accounts operation remains available and distinct from List Applications.
+
+### Breaking
+
+- Existing Create Virtual Account callers must add `country`, replace a currency
+  collection with one `currency`, and consume the application response instead
+  of the previous request acknowledgement.
+- Virtual Account webhook consumers must correlate by `application_id`, process
+  complete application data, and use `public_version` for ordering.
+
+### Migration and distribution
+
+- Download `uqpay-sdk-java-2.0.0.jar` from the GitHub `v2.0.0` Release and follow
+  the [Virtual Account migration guide](https://developers.uqpay.com/global-account/v1.6/guide/migrate-to-virtual-account-applications).
+- The artifact remains a thin JAR and is not available from Maven Central. Install
+  it into a local repository and declare Jackson, OkHttp, and Bouncy Castle in the
+  consuming project.
 
 ## [1.2.0]
 
