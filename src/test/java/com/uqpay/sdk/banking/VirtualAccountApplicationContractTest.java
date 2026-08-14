@@ -169,7 +169,7 @@ class VirtualAccountApplicationContractTest {
     }
 
     @Test
-    void gatewayApplicationDtoDoesNotExposeWebhookAccountCorrelationFields() {
+    void currentRestApplicationDtoDoesNotExposeAccountCorrelationFields() {
         VirtualAccountApplication application = new VirtualAccountApplication();
         application.setApplicationId("app-1");
         application.setPublicVersion(1);

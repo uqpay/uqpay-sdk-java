@@ -15,11 +15,12 @@ Virtual Account integrations must migrate before adopting this version.
 
 ### Fixed
 
-- Restored the required webhook-only `account_id` and `direct_id` correlation fields on
+- Restored the required `account_id` and `direct_id` correlation fields on
   `VirtualAccountEventData` for `V1.5.1`, `V1.5.2`, and `V1.6.0` Virtual Account application
   events. Typed parsing rejects events missing either field; generic raw event data remains
-  available for retaining historical/retried payloads that predate them. Gateway Create, List,
-  and Retrieve application response models remain unchanged.
+  available for retaining historical/retried payloads that predate them. This change is scoped
+  to webhook types; whether the runtime fields should enter the public REST Create, List, and
+  Retrieve contract remains pending confirmation.
 
 ### Changed
 
