@@ -44,7 +44,7 @@ public class SubAccountRepresentative {
     private String phoneNumber; // Optional. Phone number, max 25 chars
 
     @JsonProperty("date_of_birth")
-    private String dateOfBirth; // Required. Format: YYYY-MM-DD
+    private String dateOfBirth; // Optional. When provided, format: YYYY-MM-DD
 
     @JsonProperty("country_or_territory")
     private String countryOrTerritory; // Optional. ISO 3166-1 alpha-2 country code for residential address
