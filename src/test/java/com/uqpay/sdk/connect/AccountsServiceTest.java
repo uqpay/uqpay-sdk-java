@@ -6,6 +6,7 @@ import com.uqpay.sdk.connect.model.EntityType;
 import com.uqpay.sdk.connect.model.ListAccountsRequest;
 import com.uqpay.sdk.connect.model.PersonDetails;
 import com.uqpay.sdk.connect.model.SubAccountIndividualInfo;
+import com.uqpay.sdk.connect.model.SubAccountRepresentative;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -137,6 +138,7 @@ class AccountsServiceTest {
         @DisplayName("should serialize the breaking-change individual_info fields with snake_case keys")
         void shouldSerializeNewRequiredFields() throws Exception {
             SubAccountIndividualInfo info = new SubAccountIndividualInfo();
+            info.setDateOfBirth("1990-01-15");
             // Required effective 2026-03-19
             info.setEmploymentStatus("Employed");
             info.setIndustry("Information Technology/IT");
@@ -152,6 +154,7 @@ class AccountsServiceTest {
             String json = mapper.writeValueAsString(info);
 
             assertThat(json)
+                    .contains("\"date_of_birth\":\"1990-01-15\"")
                     .contains("\"employment_status\":\"Employed\"")
                     .contains("\"industry\":\"Information Technology/IT\"")
                     .contains("\"job_title\":\"Business and administration professionals\"")
@@ -160,6 +163,27 @@ class AccountsServiceTest {
                     .contains("\"annual_income\":\"85000\"")
                     .contains("\"state\":\"Singapore\"")
                     .contains("\"apartment_suite_or_floor\":\"Unit 1\"");
+        }
+    }
+
+    @Nested
+    @DisplayName("SubAccountRepresentative optional date-of-birth serialization")
+    class SubAccountRepresentativeSerialization {
+
+        private final ObjectMapper mapper = new ObjectMapper();
+
+        @Test
+        @DisplayName("should omit an absent COMPANY representative DOB and preserve a provided YYYY-MM-DD value")
+        void shouldTreatDateOfBirthAsOptional() throws Exception {
+            SubAccountRepresentative representative = new SubAccountRepresentative();
+
+            assertThat(mapper.writeValueAsString(representative))
+                    .doesNotContain("date_of_birth");
+
+            representative.setDateOfBirth("1985-03-20");
+
+            assertThat(mapper.writeValueAsString(representative))
+                    .contains("\"date_of_birth\":\"1985-03-20\"");
         }
     }
 }

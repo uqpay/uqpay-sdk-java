@@ -33,7 +33,7 @@ public class SubAccountIndividualInfo {
     private String emailAddress;
 
     @JsonProperty("date_of_birth")
-    private String dateOfBirth;
+    private String dateOfBirth; // Required. Format: YYYY-MM-DD
 
     /**
      * Individual's gender. One of {@code MALE} or {@code FEMALE}.
