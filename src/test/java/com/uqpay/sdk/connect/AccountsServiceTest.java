@@ -6,6 +6,8 @@ import com.uqpay.sdk.connect.model.EntityType;
 import com.uqpay.sdk.connect.model.ListAccountsRequest;
 import com.uqpay.sdk.connect.model.PersonDetails;
 import com.uqpay.sdk.connect.model.SubAccountIndividualInfo;
+import com.uqpay.sdk.connect.model.SubAccountBusinessDetails;
+import com.uqpay.sdk.connect.model.SubAccountCompanyPurpose;
 import com.uqpay.sdk.connect.model.SubAccountRepresentative;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -167,23 +169,52 @@ class AccountsServiceTest {
     }
 
     @Nested
-    @DisplayName("SubAccountRepresentative optional date-of-birth serialization")
+    @DisplayName("SubAccountRepresentative required date-of-birth serialization")
     class SubAccountRepresentativeSerialization {
 
         private final ObjectMapper mapper = new ObjectMapper();
 
         @Test
-        @DisplayName("should omit an absent COMPANY representative DOB and preserve a provided YYYY-MM-DD value")
-        void shouldTreatDateOfBirthAsOptional() throws Exception {
+        @DisplayName("should preserve a COMPANY representative YYYY-MM-DD date-of-birth value")
+        void shouldSerializeDateOfBirth() throws Exception {
             SubAccountRepresentative representative = new SubAccountRepresentative();
-
-            assertThat(mapper.writeValueAsString(representative))
-                    .doesNotContain("date_of_birth");
-
             representative.setDateOfBirth("1985-03-20");
 
             assertThat(mapper.writeValueAsString(representative))
                     .contains("\"date_of_birth\":\"1985-03-20\"");
+        }
+    }
+
+    @Nested
+    @DisplayName("COMPANY v3 request serialization")
+    class CompanyV3Serialization {
+
+        private final ObjectMapper mapper = new ObjectMapper();
+
+        @Test
+        @DisplayName("should serialize required representative and business detail fields")
+        void shouldSerializeRequiredCompanyFields() throws Exception {
+            SubAccountRepresentative representative = new SubAccountRepresentative();
+            representative.setEmailAddress("owner@example.com");
+            representative.setOwnershipPercentage("0");
+
+            assertThat(mapper.writeValueAsString(representative))
+                    .contains("\"email_address\":\"owner@example.com\"")
+                    .contains("\"ownership_percentage\":\"0\"");
+
+            SubAccountBusinessDetails details = new SubAccountBusinessDetails();
+            details.setAccountPurpose(java.util.Arrays.asList(
+                    SubAccountCompanyPurpose.PAYMENT_COLLECTION,
+                    SubAccountCompanyPurpose.TREASURY_FX));
+            details.setBankingCurrencies(java.util.Collections.singletonList("SGD"));
+            details.setBankingCountries(java.util.Collections.singletonList("SG"));
+            details.setArticlesOfAssociation(java.util.Collections.singletonList("file-id"));
+
+            assertThat(mapper.writeValueAsString(details))
+                    .contains("\"account_purpose\":[\"PAYMENT_COLLECTION\",\"TREASURY_FX\"]")
+                    .contains("\"banking_currencies\":[\"SGD\"]")
+                    .contains("\"banking_countries\":[\"SG\"]")
+                    .contains("\"articles_of_association\":[\"file-id\"]");
         }
     }
 }

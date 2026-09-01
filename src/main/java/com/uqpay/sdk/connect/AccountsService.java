@@ -10,6 +10,8 @@ import com.uqpay.sdk.connect.model.Document;
 import com.uqpay.sdk.connect.model.EntityType;
 import com.uqpay.sdk.connect.model.ListAccountsRequest;
 import com.uqpay.sdk.connect.model.ListAccountsResponse;
+import com.uqpay.sdk.connect.model.SubAccountBusinessDetails;
+import com.uqpay.sdk.connect.model.SubAccountRepresentative;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,7 +76,7 @@ public final class AccountsService {
      * @param request the sub-account creation request
      * @return the created sub-account
      * @throws UqpayException       if the request fails
-     * @throws IllegalArgumentException if the request is null or missing entity type
+     * @throws IllegalArgumentException if the request violates the entity type contract
      */
     @NotNull
     public Account createSubAccount(@NotNull CreateSubAccountRequest request) throws UqpayException {
@@ -88,7 +90,7 @@ public final class AccountsService {
      * @param options the request options (optional)
      * @return the created sub-account
      * @throws UqpayException       if the request fails
-     * @throws IllegalArgumentException if the request is null or missing entity type
+     * @throws IllegalArgumentException if the request violates the entity type contract
      */
     @NotNull
     public Account createSubAccount(@NotNull CreateSubAccountRequest request, @Nullable RequestOptions options)
@@ -231,6 +233,47 @@ public final class AccountsService {
         if (request.getEntityType() == EntityType.INDIVIDUAL && request.getIndividualInfo() == null) {
             throw new IllegalArgumentException(
                     "individual_info required for INDIVIDUAL entity type");
+        }
+        if (request.getEntityType() == EntityType.COMPANY
+                && !Integer.valueOf(1).equals(request.getInherit())) {
+            validateCompanySubAccountRequest(request);
+        }
+    }
+
+    private void validateCompanySubAccountRequest(@NotNull CreateSubAccountRequest request) {
+        requireCompanyField(request.getCompanyInfo(), "company_info");
+        requireCompanyField(request.getCompanyAddress(), "company_address");
+        requireCompanyField(request.getOwnershipDetails(), "ownership_details");
+        requireCompanyField(request.getBusinessDetails(), "business_details");
+
+        if (request.getOwnershipDetails().getRepresentatives() == null) {
+            throw new IllegalArgumentException(
+                    "ownership_details.representatives required for COMPANY entity type when inherit != 1");
+        }
+        for (int index = 0; index < request.getOwnershipDetails().getRepresentatives().size(); index++) {
+            SubAccountRepresentative representative = request.getOwnershipDetails().getRepresentatives().get(index);
+            String path = "ownership_details.representatives[" + index + "]";
+            if (representative == null) {
+                throw new IllegalArgumentException(
+                        path + " must not be null for COMPANY entity type when inherit != 1");
+            }
+            requireCompanyField(representative.getEmailAddress(), path + ".email_address");
+            requireCompanyField(representative.getOwnershipPercentage(), path + ".ownership_percentage");
+            requireCompanyField(representative.getDateOfBirth(), path + ".date_of_birth");
+        }
+
+        SubAccountBusinessDetails businessDetails = request.getBusinessDetails();
+        requireCompanyField(businessDetails.getAccountPurpose(), "business_details.account_purpose");
+        requireCompanyField(businessDetails.getBankingCurrencies(), "business_details.banking_currencies");
+        requireCompanyField(businessDetails.getBankingCountries(), "business_details.banking_countries");
+        requireCompanyField(businessDetails.getArticlesOfAssociation(),
+                "business_details.articles_of_association");
+    }
+
+    private void requireCompanyField(@Nullable Object value, @NotNull String fieldPath) {
+        if (value == null) {
+            throw new IllegalArgumentException(
+                    fieldPath + " required for COMPANY entity type when inherit != 1");
         }
     }
 

@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0]
+
+This major release aligns Account Center Create SubAccount COMPANY requests
+with the contract that takes effect in Production on 2026-09-17.
+
+### Breaking
+
+- For `entity_type=COMPANY` with `inherit=-1`, representatives now require
+  `emailAddress`, `dateOfBirth`, and string-valued `ownershipPercentage`; use
+  `"0"` when a representative has no ownership.
+- `SubAccountBusinessDetails` now requires `accountPurpose`,
+  `bankingCurrencies`, `bankingCountries`, and `articlesOfAssociation`.
+- `accountPurpose` uses `SubAccountCompanyPurpose` and accepts only the eight
+  company-purpose enum values introduced in this release.
+- `createSubAccount` rejects missing non-inherited COMPANY sections and the
+  newly required representative and business fields before sending the HTTP
+  request.
+
+See the [Account Center Changelog](https://developers.uqpay.com/changelog) for
+the rollout timeline and migration details.
+
+### Migration and distribution
+
+- Download `uqpay-sdk-java-3.0.0.jar` from the GitHub `v3.0.0` Release, update
+  affected COMPANY payloads, and validate them in Sandbox before the Production
+  cutover. The artifact remains a thin JAR and is not available from Maven
+  Central.
+
 ## [2.1.0]
 
 ### Changed

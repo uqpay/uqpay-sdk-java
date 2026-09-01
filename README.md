@@ -13,18 +13,18 @@ Official Java SDK for the [UQPAY API](https://developers.uqpay.com/).
 
 The Java SDK is distributed as a thin JAR through
 [GitHub Releases](https://github.com/uqpay/uqpay-sdk-java/releases). It is not
-published to Maven Central, so `com.uqpay.sdk:uqpay-sdk-java:1.2.0` cannot be
+published to Maven Central, so `com.uqpay.sdk:uqpay-sdk-java:3.0.0` cannot be
 resolved from a public Maven repository.
 
-Download `uqpay-sdk-java-1.2.0.jar` from the `v1.2.0` GitHub Release and install
+Download `uqpay-sdk-java-3.0.0.jar` from the `v3.0.0` GitHub Release and install
 it into your local Maven repository:
 
 ```bash
 mvn install:install-file \
-  -Dfile=uqpay-sdk-java-1.2.0.jar \
+  -Dfile=uqpay-sdk-java-3.0.0.jar \
   -DgroupId=com.uqpay.sdk \
   -DartifactId=uqpay-sdk-java \
-  -Dversion=1.2.0 \
+  -Dversion=3.0.0 \
   -Dpackaging=jar
 ```
 

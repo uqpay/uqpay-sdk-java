@@ -62,10 +62,10 @@ public class CreateSubAccountRequest {
     private SubAccountCompanyAddress companyAddress; // Required for COMPANY (unless inherit=1). Company address details
 
     @JsonProperty("ownership_details")
-    private SubAccountOwnershipDetails ownershipDetails; // Required for COMPANY. Ownership and representative details
+    private SubAccountOwnershipDetails ownershipDetails; // Required for COMPANY (unless inherit=1). Ownership and representative details
 
     @JsonProperty("business_details")
-    private SubAccountBusinessDetails businessDetails; // Required for COMPANY. Business operation details
+    private SubAccountBusinessDetails businessDetails; // Required for COMPANY (unless inherit=1). Business operation details
 
     @JsonProperty("additional_documents")
     private AdditionalDocuments additionalDocuments; // Optional for COMPANY. Additional documents for onboarding
