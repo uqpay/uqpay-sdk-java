@@ -23,7 +23,7 @@ public class SubAccountRepresentative {
     private String nameInOtherLanguage; // Optional. Name in other language, max 100 chars
 
     @JsonProperty("email_address")
-    private String emailAddress; // Optional. Email address, max 100 chars
+    private String emailAddress; // Required. Email address, max 100 chars
 
     @JsonProperty("is_applicant")
     private String isApplicant; // Optional. "0" or "1", indicates if representative is the applicant
@@ -32,7 +32,7 @@ public class SubAccountRepresentative {
     private String jobTitle; // Required. DIRECTOR, BENEFICIAL_OWNER, BENEFICIAL_OWNER_AND_DIRECTOR, or AUTHORISED_PERSON
 
     @JsonProperty("ownership_percentage")
-    private Double ownershipPercentage; // Optional. Ownership share percentage
+    private String ownershipPercentage; // Required. Decimal string; use "0" when there is no ownership
 
     @JsonProperty("nationality")
     private String nationality; // Required. ISO 3166-1 alpha-2 country code
@@ -44,7 +44,7 @@ public class SubAccountRepresentative {
     private String phoneNumber; // Optional. Phone number, max 25 chars
 
     @JsonProperty("date_of_birth")
-    private String dateOfBirth; // Optional. When provided, format: YYYY-MM-DD
+    private String dateOfBirth; // Required. Format: YYYY-MM-DD
 
     @JsonProperty("country_or_territory")
     private String countryOrTerritory; // Optional. ISO 3166-1 alpha-2 country code for residential address
@@ -130,11 +130,11 @@ public class SubAccountRepresentative {
         this.jobTitle = jobTitle;
     }
 
-    public Double getOwnershipPercentage() {
+    public String getOwnershipPercentage() {
         return ownershipPercentage;
     }
 
-    public void setOwnershipPercentage(Double ownershipPercentage) {
+    public void setOwnershipPercentage(String ownershipPercentage) {
         this.ownershipPercentage = ownershipPercentage;
     }
 

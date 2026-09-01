@@ -47,13 +47,16 @@ public class SubAccountBusinessDetails {
     private String companyDescription;
 
     @JsonProperty("account_purpose")
-    private List<String> accountPurpose;
+    private List<SubAccountCompanyPurpose> accountPurpose;
 
     @JsonProperty("banking_currencies")
     private List<String> bankingCurrencies;
 
     @JsonProperty("banking_countries")
     private List<String> bankingCountries;
+
+    @JsonProperty("articles_of_association")
+    private List<String> articlesOfAssociation;
 
     @JsonProperty("issuing_countries")
     private List<String> issuingCountries;
@@ -152,11 +155,11 @@ public class SubAccountBusinessDetails {
         this.companyDescription = companyDescription;
     }
 
-    public List<String> getAccountPurpose() {
+    public List<SubAccountCompanyPurpose> getAccountPurpose() {
         return accountPurpose;
     }
 
-    public void setAccountPurpose(List<String> accountPurpose) {
+    public void setAccountPurpose(List<SubAccountCompanyPurpose> accountPurpose) {
         this.accountPurpose = accountPurpose;
     }
 
@@ -174,6 +177,14 @@ public class SubAccountBusinessDetails {
 
     public void setBankingCountries(List<String> bankingCountries) {
         this.bankingCountries = bankingCountries;
+    }
+
+    public List<String> getArticlesOfAssociation() {
+        return articlesOfAssociation;
+    }
+
+    public void setArticlesOfAssociation(List<String> articlesOfAssociation) {
+        this.articlesOfAssociation = articlesOfAssociation;
     }
 
     public List<String> getIssuingCountries() {
