@@ -51,3 +51,7 @@ Card creation orders use `CREATE_CARD`. Issuing transfer REST status uses upperc
 Card and simulated authorization responses store decimal amounts as strings. Use `RetrieveCardResponse.getCardLimitValue()` and `SimulateAuthorizationResponse.getTransactionAmountValue()`, `getBillingAmountValue()` and `getCardAvailableBalanceValue()` for exact values. Legacy Double getters/setters remain available; numeric getters are deprecated because they may lose precision.
 
 `NetworkProtectionFeeData` and `IssuingTransferStatusChangedData` expose string amounts. Representative webhook models accept null or array `other_documents`. `CardDetails.getIssuerCountryCode()` is optional and is based on Sandbox commit `5450a0a9` (gateway head `fb887a5d9261ed57122ac2583c02d9651595fa3e`); production support is not assumed.
+
+## Acquiring GET headers
+
+Offline route-specific checks cover D189–D196: balance list/detail, bank account list/detail, payout list/detail, settlements list and payment intent detail. Each call is exercised with and without `x-on-behalf-of`, while preserving the configured `x-client-id`. Callers need not supply an idempotency key for these GET requests; existing automatic GET headers remain supported. Existing POST idempotency and retry tests remain part of verification.

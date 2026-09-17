@@ -42,11 +42,27 @@ class ContractBoundariesTest {
    assertThat(captured.get(captured.size()-1).url().queryParameter("page_size")).isEqualTo(String.valueOf(size));
   }
   PaymentClient payment=new PaymentClient(api);
-  payment.getPaymentIntents().get("pi-1",RequestOptions.builder().onBehalfOf("sub-account").build());
-  assertThat(captured.get(captured.size()-1).header("x-on-behalf-of")).isEqualTo("sub-account");
+  // D189-D196: each GET accepts delegation without caller idempotency keys.
+  for (String account : new String[]{"sub-account", ""}) {
+   RequestOptions options=account.isEmpty()?null:RequestOptions.builder().onBehalfOf(account).build();
+   payment.getBalances().list(new com.uqpay.sdk.payment.model.ListPaymentBalancesRequest(),options);checkGet(captured,"/v2/payment/balances",account);
+   payment.getBalances().get("USD",options);checkGet(captured,"/v2/payment/balances/USD",account);
+   payment.getBankAccounts().list(new com.uqpay.sdk.payment.model.ListBankAccountsRequest(),options);checkGet(captured,"/v2/payment/bankaccount",account);
+   payment.getBankAccounts().get("ba-1",options);checkGet(captured,"/v2/payment/bankaccount/ba-1",account);
+   payment.getPayouts().list(new com.uqpay.sdk.payment.model.ListPayoutsRequest(),options);checkGet(captured,"/v2/payment/payout",account);
+   payment.getPayouts().get("po-1",options);checkGet(captured,"/v2/payment/payout/po-1",account);
+   payment.getReports().listSettlements(new com.uqpay.sdk.payment.model.ListSettlementsRequest(),options);checkGet(captured,"/v2/payment/settlements",account);
+   payment.getPaymentIntents().get("pi-1",options);checkGet(captured,"/v2/payment_intents/pi-1",account);
+  }
   CreatePaymentIntentRequest request=new CreatePaymentIntentRequest();request.setAmount("1.00");request.setCurrency("USD");
   payment.getPaymentIntents().create(request,RequestOptions.builder().idempotencyKey("fixed-key").build());
   assertThat(captured.get(captured.size()-1).header("x-idempotency-key")).isEqualTo("fixed-key");
+ }
+ private void checkGet(java.util.List<okhttp3.Request> requests,String path,String account) {
+  okhttp3.Request request=requests.get(requests.size()-1);
+  assertThat(request.method()).isEqualTo("GET");assertThat(request.url().encodedPath()).isEqualTo(path);
+  assertThat(request.header("x-client-id")).isEqualTo("client");
+  assertThat(request.header("x-on-behalf-of")==null?"":request.header("x-on-behalf-of")).isEqualTo(account);
  }
  private JsonNode body(ObjectMapper mapper,java.util.List<okhttp3.Request> requests) throws Exception {
   okio.Buffer buffer=new okio.Buffer();requests.get(requests.size()-1).body().writeTo(buffer);return mapper.readTree(buffer.readUtf8());
