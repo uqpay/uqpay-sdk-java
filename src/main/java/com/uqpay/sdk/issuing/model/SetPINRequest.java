@@ -32,4 +32,18 @@ public class SetPINRequest {
     public void setPin(String pin) {
         this.pin = pin;
     }
+
+    @JsonProperty("type")
+    private String type; // SET (default), RESET, UPDATE
+
+    public String getType() { return type; }
+
+    public void setType(String type) { this.type = type; }
+
+    @JsonProperty("old_pin")
+    private String oldPin; // Six digits; required for UPDATE, prohibited otherwise.
+
+    public String getOldPin() { return oldPin; }
+
+    public void setOldPin(String oldPin) { this.oldPin = oldPin; }
 }

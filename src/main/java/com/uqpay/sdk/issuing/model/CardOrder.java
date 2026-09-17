@@ -109,4 +109,11 @@ public class CardOrder {
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
     }
+
+    @JsonProperty("failure_code")
+    private String failureCode;
+
+    public String getFailureCode() { return failureCode; }
+
+    public void setFailureCode(String failureCode) { this.failureCode = failureCode; }
 }

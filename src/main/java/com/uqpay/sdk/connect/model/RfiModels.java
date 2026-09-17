@@ -9,6 +9,21 @@ public final class RfiModels {
         public String key;
         public String type;
         public List<String> attachments;
+        public String text;
+    }
+
+    public static final class Attachment {
+        public String fileType;
+        public String fileName;
+        public Long size;
+        public String url;
+    }
+
+    public static final class AnswerResponse {
+        public String key;
+        public String type;
+        public String text;
+        public List<Attachment> attachments;
     }
 
     public static final class Question {
@@ -19,7 +34,7 @@ public final class RfiModels {
 
     public static final class RequestItem {
         public Question question;
-        public AnswerItem answer;
+        public AnswerResponse answer;
     }
 
     public static final class Rfi {

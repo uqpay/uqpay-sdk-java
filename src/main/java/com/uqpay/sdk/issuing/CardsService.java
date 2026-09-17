@@ -212,7 +212,8 @@ public final class CardsService {
     }
 
     // =========================================================================
-    // Reset PIN
+    // PIN management: omitted type means SET. Explicit RESET needs no old PIN;
+    // UPDATE requires the current six-digit old_pin. SUCCESS means asynchronous acceptance.
     // =========================================================================
 
     @NotNull

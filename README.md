@@ -357,6 +357,8 @@ client.simulator().getIssuing().reverse(revReq);
 
 // Simulate a deposit
 SimulateDepositRequest depositReq = new SimulateDepositRequest();
+depositReq.setAccountId("account-id");
+depositReq.setSenderSwiftCode("WELGBE22");
 depositReq.setCurrency("SGD");
 depositReq.setAmount(500.00);
 SimulateDepositResponse deposit = client.simulator().getDeposits().simulate(depositReq);
@@ -637,3 +639,7 @@ uqpay-sdk-java/
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+## Contract migration notes
+
+See [PIN, RFI, deposit simulation and settlement contracts](CONTRACT_ALIGNMENT.md) for request changes and response interpretation.
