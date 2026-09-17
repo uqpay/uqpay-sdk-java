@@ -202,4 +202,15 @@ public class CardTransactionData {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @JsonProperty("wallet_type")
+    private String walletType;
+
+    public String getWalletType() {
+        return walletType;
+    }
+
+    public void setWalletType(String walletType) {
+        this.walletType = walletType;
+    }
 }

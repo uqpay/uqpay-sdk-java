@@ -12,7 +12,7 @@ public class BeneficiaryCheckRequest {
     private String entityType; // Required. COMPANY or INDIVIDUAL
 
     @JsonProperty("account_number")
-    private String accountNumber; // Required. Alphanumeric only, max 60 chars, no dashes
+    private String accountNumber; // At least one non-empty accountNumber or iban; accountNumber takes precedence.
 
     @JsonProperty("payment_method")
     private String paymentMethod; // Required. LOCAL or SWIFT
@@ -21,7 +21,7 @@ public class BeneficiaryCheckRequest {
     private String currency; // Required. ISO 4217 currency code, e.g. "USD"
 
     @JsonProperty("bank_country_code")
-    private String bankCountryCode; // Required. ISO 3166-1 alpha-2 country code, e.g. "SG"
+    private String bankCountryCode; // Conditional on payment method and currency; ISO 3166-1 alpha-2.
 
     @JsonProperty("first_name")
     private String firstName; // Optional. Beneficiary given name, max 45 chars
@@ -36,7 +36,7 @@ public class BeneficiaryCheckRequest {
     private String clearingSystem; // Optional. Transaction clearing network, varies by currency (e.g. ACH, SWIFT, GIRO, FPS)
 
     @JsonProperty("iban")
-    private String iban; // Optional. International bank account number, max 36 chars; required for specific countries
+    private String iban; // Alternative to accountNumber. International bank account number, max 36 chars.
 
     @JsonProperty("additional_info")
     private BeneficiaryAdditionalInfo additionalInfo; // Optional. Supplementary beneficiary data; contains proxy_id for PayNow

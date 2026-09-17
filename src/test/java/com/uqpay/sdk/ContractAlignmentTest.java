@@ -35,6 +35,7 @@ class ContractAlignmentTest {
    okhttp3.Request request = chain.request(); captured.add(request);
    String body;
    switch (request.url().encodedPath()) {
+    case "/v1/issuing/cards/card-1": body = "{\"card_order_id\":\"art-order\",\"order_status\":\"PROCESSING\"}"; break;
     case "/v1/issuing/cards/pin": body = "{\"request_status\":\"SUCCESS\",\"card_order_id\":\"order-1\",\"order_status\":\"PROCESSING\"}"; break;
     case "/v1/rfis/answer": body = "{\"rfi_id\":\"ACTREQ-test\",\"request\":[{\"answer\":{\"attachments\":[{\"file_name\":\"proof.pdf\"}]}}]}"; break;
     case "/v1/simulation/deposit": body = "{\"deposit_id\":\"deposit-1\",\"amount\":\"10\"}"; break;
@@ -62,5 +63,11 @@ class ContractAlignmentTest {
   buffer = new okio.Buffer();captured.get(2).body().writeTo(buffer);
   assertThat(mapper.readTree(buffer.readUtf8()).get("account_id").asText()).isEqualTo("account-1");
   assertThat(issuing.getTransactions().get("tx-1").getSettlementStatus()).isEqualTo("SETTLED");
+  CardUpdateRequest art = new CardUpdateRequest();art.setCardArtId("art-1");art.setNameOnCard("Test");
+  assertThat(issuing.getCards().update("card-1",art).getOrderStatus()).isEqualTo("PROCESSING");
+  buffer = new okio.Buffer();captured.get(captured.size()-1).body().writeTo(buffer);
+  com.fasterxml.jackson.databind.JsonNode sent = mapper.readTree(buffer.readUtf8());
+  assertThat(sent.get("card_art_id").asText()).isEqualTo("art-1");
+  assertThat(sent.get("name_on_card").asText()).isEqualTo("Test");
  }
 }

@@ -68,4 +68,26 @@ public class CardUpdateRequest {
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
     }
+
+    @JsonProperty("card_art_id")
+    private String cardArtId;
+
+    public String getCardArtId() {
+        return cardArtId;
+    }
+
+    public void setCardArtId(String cardArtId) {
+        this.cardArtId = cardArtId;
+    }
+
+    @JsonProperty("name_on_card")
+    private String nameOnCard;
+
+    public String getNameOnCard() {
+        return nameOnCard;
+    }
+
+    public void setNameOnCard(String nameOnCard) {
+        this.nameOnCard = nameOnCard;
+    }
 }

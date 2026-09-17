@@ -32,4 +32,37 @@ public class AlipayDetails {
     public void setOsType(String osType) {
         this.osType = osType;
     }
+
+    @JsonProperty("static_qrcode")
+    private String staticQrcode;
+
+    public String getStaticQrcode() {
+        return staticQrcode;
+    }
+
+    public void setStaticQrcode(String staticQrcode) {
+        this.staticQrcode = staticQrcode;
+    }
+
+    @JsonProperty("static_qrcode_extension")
+    private String staticQrcodeExtension;
+
+    public String getStaticQrcodeExtension() {
+        return staticQrcodeExtension;
+    }
+
+    public void setStaticQrcodeExtension(String staticQrcodeExtension) {
+        this.staticQrcodeExtension = staticQrcodeExtension;
+    }
+
+    @JsonProperty("static_qrcode_number_plate")
+    private String staticQrcodeNumberPlate;
+
+    public String getStaticQrcodeNumberPlate() {
+        return staticQrcodeNumberPlate;
+    }
+
+    public void setStaticQrcodeNumberPlate(String staticQrcodeNumberPlate) {
+        this.staticQrcodeNumberPlate = staticQrcodeNumberPlate;
+    }
 }
