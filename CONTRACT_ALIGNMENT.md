@@ -59,3 +59,13 @@ Offline route-specific checks cover D189–D196: balance list/detail, bank accou
 ## Banking balance precision
 
 Offline D122–D129 fixtures cover `available_balance`, `frozen_balance`, `margin_balance` and `prepaid_balance` through both list and detail reads. Each field receives zero with trailing decimal places, a positive amount, a negative amount, large positive/negative amounts, and a long decimal string. Distinct values across fields detect accidental swaps; comparisons retain strings and precision. Long decimal fixtures test client robustness, not server-supported currency precision. CLI verification covers JSON output.
+
+## Acquiring nullable responses
+
+Offline fixtures distinguish missing fields, explicit null, empty strings/objects and populated controls. REST checks cover payment attempts, refunds and payouts. Empty REST event times remain strings. Webhook fixtures exercise intent, attempt, refund, payout and chargeback alert families; empty timestamps or incomplete objects are robustness probes, not claims of server-valid payloads.
+
+Signed Webhook fixtures preserve raw data and reject a payload whose bytes change after signing. This is offline verification, not evidence of event delivery from Sandbox.
+
+`PayoutAcquiringData.completeTime` and `ChargebackAlertData.appealTime/responseTime` are exposed. POJOs merge missing with explicit null; use `Event.getData()` for that distinction. REST `PaymentIntent` and `Refund` retain legacy `getMetadata()` behavior (null becomes an empty Map); use `getMetadataValue()` to distinguish null from an empty object. The new accessor does not change legacy JSON serialization.
+
+Java acquiring payout/chargeback models also expose their canonical account, amount, currency, reference and alert fields while retaining legacy attributes. Numeric `payout_amount` uses `BigDecimal`; the Webhook envelope parses decimal numbers without an intermediate double. Consumers inspecting `Event.getData()` should use the numeric JsonNode API rather than assuming a DoubleNode.
