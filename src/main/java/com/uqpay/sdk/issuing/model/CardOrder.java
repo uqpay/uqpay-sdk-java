@@ -15,7 +15,7 @@ public class CardOrder {
     private String cardOrderId; // UUID
 
     @JsonProperty("order_type")
-    private String orderType; // CARD_CREATE | CARD_RECHARGE | CARD_WITHDRAW | CARD_UPDATE
+    private String orderType; // CREATE_CARD | CARD_RECHARGE | CARD_WITHDRAW | CARD_UPDATE
 
     @JsonProperty("amount")
     private Double amount; // recharge/withdraw amount

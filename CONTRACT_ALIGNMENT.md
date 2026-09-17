@@ -1,6 +1,6 @@
 # API contract alignment
 
-Contract reference: [OpenAPI revision 8267056](https://github.com/uqpay/uqpay-docs/tree/8267056f7fefc1183b069e0387e5ebaecbd2ad27/docs).
+Contract reference: [OpenAPI revision 1feb1d2](https://github.com/uqpay/uqpay-docs/tree/1feb1d26d032c53b79ab44a7d48e88c9a91d397d/docs).
 
 ## PIN management
 
@@ -37,3 +37,17 @@ Card updates accept `card_art_id` and `name_on_card`. Card art changes apply to 
 Payment method parsing covers all 26 contract types, card-present details, card name/number/network and static QR fields. The existing `AlipayDetails` class is retained for non-card details. Payment intent events expose `nextAction`; issuing transaction events expose open-string `walletType`, and cardholder events expose `reason`. Deposit responses expose deposit method and sender classifications.
 
 String amounts remain strings, including negative/high-precision values. Nullable fields deserialize without failure. Use the original event `data` for exact payload inspection; typed serialization omits null fields.
+
+## Boundary and response regression coverage
+
+Offline fixtures exercise all three KYC entry points (create cardholder, update cardholder and create card with inline cardholder fields). They cover all six proof providers, reference lengths 9/10/64/65 and birth dates corresponding to ages 17/18/79/80 on 2026-09-17. These tests prove that the SDK preserves the submitted values; server acceptance, current configuration and environment rollout still require Sandbox verification. Inline cardholder fields include email, first/last name and country code.
+
+Card list pagination preserves page sizes 1, 10 and 100. Banking list page sizes are 1–100. Currency conversions require a fresh quote per operation: `FUNDS_ARRIVED` is intermediate and `TRADE_SETTLED` is the successful terminal state.
+
+Payment intent retrieval supports per-request `x-on-behalf-of` without requiring a caller-supplied idempotency key. Existing automatic GET header behavior remains language-specific; the contract no longer requires the header but does not prohibit it. POST idempotency and retry behavior remain unchanged.
+
+Card creation orders use `CREATE_CARD`. Issuing transfer REST status uses uppercase `PENDING`/`FAILED`/`COMPLETED`; transfer webhook status is a distinct lowercase field. Wallet values remain open strings, including empty and unknown values. The SDK does not infer transaction context from them.
+
+Card and simulated authorization responses store decimal amounts as strings. Use `RetrieveCardResponse.getCardLimitValue()` and `SimulateAuthorizationResponse.getTransactionAmountValue()`, `getBillingAmountValue()` and `getCardAvailableBalanceValue()` for exact values. Legacy Double getters/setters remain available; numeric getters are deprecated because they may lose precision.
+
+`NetworkProtectionFeeData` and `IssuingTransferStatusChangedData` expose string amounts. Representative webhook models accept null or array `other_documents`. `CardDetails.getIssuerCountryCode()` is optional and is based on Sandbox commit `5450a0a9` (gateway head `fb887a5d9261ed57122ac2583c02d9651595fa3e`); production support is not assumed.

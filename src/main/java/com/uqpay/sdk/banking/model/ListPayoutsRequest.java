@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ListPayoutsRequest {
 
-    private int pageSize; // Required. Items per page, range: 10-100
+    private int pageSize; // Required. Items per page, range: 1-100
     private int pageNumber; // Required. Page number to retrieve, must be >= 1
     private String startTime; // Optional. Filter start time (inclusive), ISO 8601 format. Defaults to 30 days ago if omitted
     private String endTime; // Optional. Filter end time (inclusive), ISO 8601 format. Defaults to now if omitted

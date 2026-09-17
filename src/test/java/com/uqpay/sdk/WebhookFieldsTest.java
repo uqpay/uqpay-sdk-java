@@ -10,7 +10,7 @@ class WebhookFieldsTest {
  @Test void allPaymentMethodDetailsSurviveTypedParsing() throws Exception {
   ObjectMapper mapper = new ObjectMapper();
   for (String method : new String[]{"card", "card_present", "wechatpay", "alipay", "alipaycn", "alipayhk", "paynow", "grabpay", "applepay", "googlepay", "unionpay", "crypto", "tng", "truemoney", "gcash", "dana", "kakaopay", "tosspay", "naverpay", "mpay", "kplus", "boost", "rabbitlinepay", "kaspi", "hipay", "shopeepay"}) {
-   String detail = method.startsWith("card") ? "{\"card_name\":\"Test\",\"card_number\":\"411111******1111\",\"network\":\"VISA\"}" : "{\"flow\":null,\"os_type\":null,\"static_qrcode\":\"qr-data\",\"static_qrcode_extension\":\"png\",\"static_qrcode_number_plate\":\"plate\"}";
+   String detail = method.startsWith("card") ? "{\"card_name\":\"Test\",\"card_number\":\"411111******1111\",\"network\":\"VISA\",\"issuer_country_code\":\"SG\"}" : "{\"flow\":null,\"os_type\":null,\"static_qrcode\":\"qr-data\",\"static_qrcode_extension\":\"png\",\"static_qrcode_number_plate\":\"plate\"}";
    PaymentMethodData parsed = mapper.readValue("{\"type\":\"" + method + "\",\"" + method + "\":" + detail + "}", PaymentMethodData.class);
    JsonNode result = mapper.valueToTree(parsed);
    assertThat(result.has(method)).as(method).isTrue();

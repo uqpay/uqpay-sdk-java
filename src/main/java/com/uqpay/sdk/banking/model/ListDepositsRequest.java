@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ListDepositsRequest {
 
-    // Required. Number of items per page, 10-100
+    // Required. Number of items per page, 1-100
     private int pageSize;
     // Required. Page number, starts from 1
     private int pageNumber;

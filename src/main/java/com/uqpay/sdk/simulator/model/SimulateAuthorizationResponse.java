@@ -3,6 +3,7 @@ package com.uqpay.sdk.simulator.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,13 +25,13 @@ public class SimulateAuthorizationResponse {
     private String transactionType;
 
     @JsonProperty("card_available_balance")
-    private Double cardAvailableBalance;
+    private String cardAvailableBalanceValue;
 
     @JsonProperty("authorization_code")
     private String authorizationCode;
 
     @JsonProperty("billing_amount")
-    private Double billingAmount;
+    private String billingAmountValue;
 
     @JsonProperty("billing_currency")
     private String billingCurrency;
@@ -39,7 +40,7 @@ public class SimulateAuthorizationResponse {
     private String transactionCurrency;
 
     @JsonProperty("transaction_amount")
-    private Double transactionAmount;
+    private String transactionAmountValue;
 
     @JsonProperty("transaction_time")
     private String transactionTime;
@@ -99,12 +100,26 @@ public class SimulateAuthorizationResponse {
         this.transactionType = transactionType;
     }
 
+    /** @deprecated Use getCardAvailableBalanceValue() to retain decimal precision. */
+    @Deprecated
+    @JsonIgnore
     public Double getCardAvailableBalance() {
-        return cardAvailableBalance;
+        return cardAvailableBalanceValue == null || cardAvailableBalanceValue.isEmpty() ? null : Double.valueOf(cardAvailableBalanceValue);
     }
 
+    @JsonIgnore
     public void setCardAvailableBalance(Double cardAvailableBalance) {
-        this.cardAvailableBalance = cardAvailableBalance;
+        this.cardAvailableBalanceValue = cardAvailableBalance == null ? null : cardAvailableBalance.toString();
+    }
+
+    @JsonProperty("card_available_balance")
+    public String getCardAvailableBalanceValue() {
+        return cardAvailableBalanceValue;
+    }
+
+    @JsonProperty("card_available_balance")
+    public void setCardAvailableBalanceValue(String value) {
+        this.cardAvailableBalanceValue = value;
     }
 
     public String getAuthorizationCode() {
@@ -115,12 +130,26 @@ public class SimulateAuthorizationResponse {
         this.authorizationCode = authorizationCode;
     }
 
+    /** @deprecated Use getBillingAmountValue() to retain decimal precision. */
+    @Deprecated
+    @JsonIgnore
     public Double getBillingAmount() {
-        return billingAmount;
+        return billingAmountValue == null || billingAmountValue.isEmpty() ? null : Double.valueOf(billingAmountValue);
     }
 
+    @JsonIgnore
     public void setBillingAmount(Double billingAmount) {
-        this.billingAmount = billingAmount;
+        this.billingAmountValue = billingAmount == null ? null : billingAmount.toString();
+    }
+
+    @JsonProperty("billing_amount")
+    public String getBillingAmountValue() {
+        return billingAmountValue;
+    }
+
+    @JsonProperty("billing_amount")
+    public void setBillingAmountValue(String value) {
+        this.billingAmountValue = value;
     }
 
     public String getBillingCurrency() {
@@ -139,12 +168,26 @@ public class SimulateAuthorizationResponse {
         this.transactionCurrency = transactionCurrency;
     }
 
+    /** @deprecated Use getTransactionAmountValue() to retain decimal precision. */
+    @Deprecated
+    @JsonIgnore
     public Double getTransactionAmount() {
-        return transactionAmount;
+        return transactionAmountValue == null || transactionAmountValue.isEmpty() ? null : Double.valueOf(transactionAmountValue);
     }
 
+    @JsonIgnore
     public void setTransactionAmount(Double transactionAmount) {
-        this.transactionAmount = transactionAmount;
+        this.transactionAmountValue = transactionAmount == null ? null : transactionAmount.toString();
+    }
+
+    @JsonProperty("transaction_amount")
+    public String getTransactionAmountValue() {
+        return transactionAmountValue;
+    }
+
+    @JsonProperty("transaction_amount")
+    public void setTransactionAmountValue(String value) {
+        this.transactionAmountValue = value;
     }
 
     public String getTransactionTime() {

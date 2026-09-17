@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ListTransfersRequest {
 
-    // Required. Range: 10-100
+    // Required. Range: 1-100
     private int pageSize;
     // Required. Starts at 1
     private int pageNumber;

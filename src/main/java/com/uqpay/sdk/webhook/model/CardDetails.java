@@ -109,4 +109,16 @@ public class CardDetails {
     public void setNetwork(String network) {
         this.network = network;
     }
+
+    /** Optional issuer country; observed in Sandbox payment events. */
+    @JsonProperty("issuer_country_code")
+    private String issuerCountryCode;
+
+    public String getIssuerCountryCode() {
+        return issuerCountryCode;
+    }
+
+    public void setIssuerCountryCode(String issuerCountryCode) {
+        this.issuerCountryCode = issuerCountryCode;
+    }
 }

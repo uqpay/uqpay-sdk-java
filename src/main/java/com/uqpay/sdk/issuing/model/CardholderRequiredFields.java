@@ -86,4 +86,48 @@ public class CardholderRequiredFields {
     public void setKycVerification(KycVerification kycVerification) {
         this.kycVerification = kycVerification;
     }
+
+    @JsonProperty("email")
+    private String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @JsonProperty("first_name")
+    private String firstName;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @JsonProperty("last_name")
+    private String lastName;
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @JsonProperty("country_code")
+    private String countryCode;
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
 }
