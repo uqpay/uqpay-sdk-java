@@ -131,4 +131,15 @@ public class Deposit {
     public void setSender(DepositSender sender) {
         this.sender = sender;
     }
+
+    @JsonProperty("deposit_method")
+    private String depositMethod;
+
+    public String getDepositMethod() {
+        return depositMethod;
+    }
+
+    public void setDepositMethod(String depositMethod) {
+        this.depositMethod = depositMethod;
+    }
 }

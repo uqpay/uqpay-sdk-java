@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ListVirtualAccountsRequest {
 
-    // Required. Number of items per page, range: 10-100
+    // Required. Number of items per page, range: 1-100
     private int pageSize;
     // Required. Page number to retrieve, starts at 1
     private int pageNumber;

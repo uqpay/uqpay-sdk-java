@@ -3,6 +3,7 @@ package com.uqpay.sdk.issuing.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,7 @@ public class RetrieveCardResponse {
     private String cardProductId; // UUID
 
     @JsonProperty("card_limit")
-    private Double cardLimit; // fixed credit limit, not cumulative balance
+    private String cardLimitValue; // fixed credit limit, not cumulative balance
 
     @JsonProperty("available_balance")
     private String availableBalance; // currency refers to card_currency
@@ -133,12 +134,27 @@ public class RetrieveCardResponse {
         this.cardProductId = cardProductId;
     }
 
+    /** @deprecated Use getCardLimitValue() to retain decimal precision. */
+    @Deprecated
+    @JsonIgnore
     public Double getCardLimit() {
-        return cardLimit;
+        return cardLimitValue == null || cardLimitValue.isEmpty() ? null : Double.valueOf(cardLimitValue);
     }
 
+    @JsonIgnore
     public void setCardLimit(Double cardLimit) {
-        this.cardLimit = cardLimit;
+        this.cardLimitValue = cardLimit == null ? null : cardLimit.toString();
+    }
+
+    /** The decimal string received from the API, without floating-point conversion. */
+    @JsonProperty("card_limit")
+    public String getCardLimitValue() {
+        return cardLimitValue;
+    }
+
+    @JsonProperty("card_limit")
+    public void setCardLimitValue(String cardLimitValue) {
+        this.cardLimitValue = cardLimitValue;
     }
 
     public String getAvailableBalance() {
@@ -187,6 +203,14 @@ public class RetrieveCardResponse {
             return (Map<String, String>) metadata;
         }
         return Collections.emptyMap();
+    }
+
+    /** Raw response metadata: an object for detail, a JSON-encoded string for list,
+     * or null. Missing fields and explicit null both return null.
+     * The legacy Map getter and its serialization behavior remain unchanged. */
+    @JsonIgnore
+    public Object getMetadataValue() {
+        return metadata;
     }
 
     public void setMetadata(Object metadata) {

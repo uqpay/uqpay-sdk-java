@@ -23,6 +23,8 @@ public class Event {
     static {
         OBJECT_MAPPER = new ObjectMapper();
         OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // Keep numeric payout amounts exact before converting raw data to a typed payload.
+        OBJECT_MAPPER.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
         OBJECT_MAPPER.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         OBJECT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
@@ -419,11 +421,15 @@ public class Event {
     }
 
     public boolean isCardholderKycEvent() {
-        return EVENT_NAME_CARDHOLDER_KYC.equals(eventName);
+        return EVENT_NAME_CARDHOLDER_KYC.equals(eventName)
+                || (EVENT_NAME_ISSUING.equals(eventName)
+                    && EVENT_TYPE_CARDHOLDER_KYC_STATUS_CHANGED.equals(eventType));
     }
 
     public boolean isCardholderUpdatedEvent() {
-        return EVENT_NAME_CARDHOLDER_UPDATED.equals(eventName);
+        return EVENT_NAME_CARDHOLDER_UPDATED.equals(eventName)
+                || (EVENT_NAME_ISSUING.equals(eventName)
+                    && EVENT_TYPE_CARDHOLDER_UPDATED.equals(eventType));
     }
 
     // =========================================================================

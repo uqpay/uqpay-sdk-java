@@ -2,7 +2,7 @@ package com.uqpay.sdk.banking.model;
 
 public class ListConversionsRequest {
 
-    private int pageSize; // Required. Items per page, range: 10-100
+    private int pageSize; // Required. Items per page, range: 1-100
     private int pageNumber; // Required. Page number to retrieve, must be >= 1
 
     public ListConversionsRequest() {

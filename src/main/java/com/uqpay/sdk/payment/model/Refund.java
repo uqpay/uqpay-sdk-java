@@ -67,6 +67,11 @@ public class Refund {
         return Collections.emptyMap();
     }
 
+    /** Raw response value; unlike getMetadata(), preserves null versus an empty object.
+     * Missing fields and explicit null both return null. */
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public Object getMetadataValue() { return metadata; }
+
     public void setMetadata(Object metadata) { this.metadata = metadata; }
 
     public String getCreateTime() { return createTime; }

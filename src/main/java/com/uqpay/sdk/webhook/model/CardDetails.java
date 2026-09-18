@@ -76,4 +76,49 @@ public class CardDetails {
     public void setCountry(String country) {
         this.country = country;
     }
+
+    @JsonProperty("card_name")
+    private String cardName;
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+
+    @JsonProperty("card_number")
+    private String cardNumber;
+
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+
+    @JsonProperty("network")
+    private String network;
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
+    }
+
+    /** Optional issuer country; observed in Sandbox payment events. */
+    @JsonProperty("issuer_country_code")
+    private String issuerCountryCode;
+
+    public String getIssuerCountryCode() {
+        return issuerCountryCode;
+    }
+
+    public void setIssuerCountryCode(String issuerCountryCode) {
+        this.issuerCountryCode = issuerCountryCode;
+    }
 }

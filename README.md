@@ -1,5 +1,8 @@
 # UQPAY Java SDK
 
+> This branch prepares SDK/CLI **4.0.0 (unreleased)**. Review [contract migration guidance](CONTRACT_ALIGNMENT.md) before upgrading. Public downloads remain on the published version until a release is explicitly announced.
+
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Official Java SDK for the [UQPAY API](https://developers.uqpay.com/).
@@ -357,6 +360,8 @@ client.simulator().getIssuing().reverse(revReq);
 
 // Simulate a deposit
 SimulateDepositRequest depositReq = new SimulateDepositRequest();
+depositReq.setAccountId("account-id");
+depositReq.setSenderSwiftCode("WELGBE22");
 depositReq.setCurrency("SGD");
 depositReq.setAmount(500.00);
 SimulateDepositResponse deposit = client.simulator().getDeposits().simulate(depositReq);
@@ -637,3 +642,7 @@ uqpay-sdk-java/
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+## Contract migration notes
+
+See [PIN, RFI, deposit simulation and settlement contracts](CONTRACT_ALIGNMENT.md) for request changes and response interpretation.

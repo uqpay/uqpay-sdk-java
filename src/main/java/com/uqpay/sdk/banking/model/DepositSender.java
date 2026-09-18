@@ -54,4 +54,26 @@ public class DepositSender {
     public void setSenderSwiftCode(String senderSwiftCode) {
         this.senderSwiftCode = senderSwiftCode;
     }
+
+    @JsonProperty("sender_type")
+    private String senderType;
+
+    public String getSenderType() {
+        return senderType;
+    }
+
+    public void setSenderType(String senderType) {
+        this.senderType = senderType;
+    }
+
+    @JsonProperty("name_type")
+    private String nameType;
+
+    public String getNameType() {
+        return nameType;
+    }
+
+    public void setNameType(String nameType) {
+        this.nameType = nameType;
+    }
 }

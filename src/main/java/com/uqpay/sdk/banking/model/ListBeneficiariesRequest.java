@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ListBeneficiariesRequest {
 
-    private int pageSize; // Required. Items per page, range: 10-100
+    private int pageSize; // Required. Items per page, range: 1-100
     private int pageNumber; // Required. Page number to retrieve, must be >= 1
     private String entityType; // Optional. Filter by entity type: COMPANY or INDIVIDUAL
     private String nickname; // Optional. Beneficiary nickname filter, max 120 chars

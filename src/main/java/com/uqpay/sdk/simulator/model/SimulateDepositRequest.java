@@ -87,4 +87,11 @@ public class SimulateDepositRequest {
     public void setSenderName(String senderName) {
         this.senderName = senderName;
     }
+
+    @JsonProperty("account_id")
+    private String accountId; // Required active, verified recipient account.
+
+    public String getAccountId() { return accountId; }
+
+    public void setAccountId(String accountId) { this.accountId = accountId; }
 }

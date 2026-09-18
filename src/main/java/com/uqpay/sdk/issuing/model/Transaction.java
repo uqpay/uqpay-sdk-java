@@ -252,4 +252,11 @@ public class Transaction {
     public void setWalletType(String walletType) {
         this.walletType = walletType;
     }
+
+    @JsonProperty("settlement_status")
+    private String settlementStatus; // Detail only. SETTLED includes partial clearing.
+
+    public String getSettlementStatus() { return settlementStatus; }
+
+    public void setSettlementStatus(String settlementStatus) { this.settlementStatus = settlementStatus; }
 }

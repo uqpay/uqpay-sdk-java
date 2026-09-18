@@ -120,4 +120,15 @@ public class CardholderData {
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
+
+    @JsonProperty("reason")
+    private String reason;
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 }

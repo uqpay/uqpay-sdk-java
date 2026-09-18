@@ -219,4 +219,15 @@ public class Representative {
     public void setCitizenshipStatus(int citizenshipStatus) {
         this.citizenshipStatus = citizenshipStatus;
     }
+
+    @JsonProperty("other_documents")
+    private java.util.List<java.util.Map<String, Object>> otherDocuments;
+
+    public java.util.List<java.util.Map<String, Object>> getOtherDocuments() {
+        return otherDocuments;
+    }
+
+    public void setOtherDocuments(java.util.List<java.util.Map<String, Object>> value) {
+        this.otherDocuments = value;
+    }
 }

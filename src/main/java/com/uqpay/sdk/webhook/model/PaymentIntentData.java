@@ -167,4 +167,15 @@ public class PaymentIntentData {
     public void setCancellationReason(String cancellationReason) {
         this.cancellationReason = cancellationReason;
     }
+
+    @JsonProperty("next_action")
+    private java.util.Map<String, Object> nextAction;
+
+    public java.util.Map<String, Object> getNextAction() {
+        return nextAction;
+    }
+
+    public void setNextAction(java.util.Map<String, Object> nextAction) {
+        this.nextAction = nextAction;
+    }
 }
