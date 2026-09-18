@@ -1,6 +1,6 @@
 # UQPAY Java SDK
 
-> This branch prepares SDK/CLI **4.0.0 (unreleased)**. Review [contract migration guidance](CONTRACT_ALIGNMENT.md) before upgrading. Public downloads remain on the published version until a release is explicitly announced.
+> SDK/CLI **4.0.0** was released on **2026-09-18**. Review [contract migration guidance](CONTRACT_ALIGNMENT.md) before upgrading.
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -16,18 +16,18 @@ Official Java SDK for the [UQPAY API](https://developers.uqpay.com/).
 
 The Java SDK is distributed as a thin JAR through
 [GitHub Releases](https://github.com/uqpay/uqpay-sdk-java/releases). It is not
-published to Maven Central, so `com.uqpay.sdk:uqpay-sdk-java:3.0.0` cannot be
+published to Maven Central, so `com.uqpay.sdk:uqpay-sdk-java:4.0.0` cannot be
 resolved from a public Maven repository.
 
-Download `uqpay-sdk-java-3.0.0.jar` from the `v3.0.0` GitHub Release and install
+Download `uqpay-sdk-java-4.0.0.jar` from the `v4.0.0` GitHub Release and install
 it into your local Maven repository:
 
 ```bash
 mvn install:install-file \
-  -Dfile=uqpay-sdk-java-3.0.0.jar \
+  -Dfile=uqpay-sdk-java-4.0.0.jar \
   -DgroupId=com.uqpay.sdk \
   -DartifactId=uqpay-sdk-java \
-  -Dversion=3.0.0 \
+  -Dversion=4.0.0 \
   -Dpackaging=jar
 ```
 
