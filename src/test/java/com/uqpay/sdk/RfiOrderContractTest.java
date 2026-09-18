@@ -75,8 +75,39 @@ class RfiOrderContractTest {
   assertThat(page.getTotalItems()).isEqualTo(1);assertThat(page.getTotalPages()).isEqualTo(1);assertThat(page.getData()).hasSize(1);
   assertThat(page.getData().get(0).getTransactionId()).isEqualTo("tx-1");assertThat(page.getData().get(0).getSettlementStatus()).isNull();
 
+  // Frozen account summaries/details and issuing money: every provided field.
+  JsonNode moneyCases;
+  try(InputStream stream=getClass().getResourceAsStream("/account-money.json")) {assertThat(stream).isNotNull();moneyCases=mapper.readTree(stream);}
+  for(JsonNode fixture:moneyCases) {
+   current.set(fixture.get("body"));Object result;
+   switch(fixture.get("operation").asText()) {
+    case "accounts.list":
+     com.uqpay.sdk.connect.model.ListAccountsRequest accountParams=new com.uqpay.sdk.connect.model.ListAccountsRequest();accountParams.setPageSize(10);accountParams.setPageNumber(1);
+     result=connect.getAccounts().list(accountParams);break;
+    case "accounts.get":result=connect.getAccounts().get("account-1");break;
+    case "transactions.get":result=issuing.getTransactions().get("tx-1");break;
+    case "transactions.list":result=issuing.getTransactions().list(params);break;
+    case "transfers.get":result=issuing.getTransfers().retrieve("transfer-1");break;
+    default:throw new AssertionError(fixture.get("operation"));
+   }
+   assertPath(request.get(),fixture.get("path").asText());
+   assertProvidedFields(fixture.get("operation").asText(),mapper.readTree(api.getObjectMapper().writeValueAsString(result)),fixture.get("body"));
+  }
+
  }
  private static void assertPath(Request request,String path) {
   assertThat(request.method()).isEqualTo("GET");assertThat(request.url().encodedPath()).isEqualTo(path);
  }
+ // Typed models may add default fields; compare every provided field recursively.
+ private static void assertProvidedFields(String path,JsonNode actual,JsonNode expected) {
+  assertThat(actual).as(path).isNotNull();
+  if(expected.isObject()) {
+   assertThat(actual.isObject()).as(path).isTrue();
+   expected.fields().forEachRemaining(entry->assertProvidedFields(path+"."+entry.getKey(),actual.get(entry.getKey()),entry.getValue()));
+  } else if(expected.isArray()) {
+   assertThat(actual.isArray()).as(path).isTrue();assertThat(actual.size()).as(path).isEqualTo(expected.size());
+   for(int i=0;i<expected.size();i++)assertProvidedFields(path+"["+i+"]",actual.get(i),expected.get(i));
+  } else assertThat(actual).as(path).isEqualTo(expected);
+ }
+
 }
