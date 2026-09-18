@@ -59,6 +59,22 @@ class RfiOrderContractTest {
    }
    if(!fixture.has("failure_code"))assertThat(order.getFailureCode()).isNull();
   }
+  // D044/D094: detail-only status; missing detail is legacy robustness.
+  for(String status:new String[]{"UNKNOWN","UNSETTLED","SETTLED","NOT_APPLICABLE",null}) {
+   com.fasterxml.jackson.databind.node.ObjectNode detail=mapper.createObjectNode().put("transaction_id","tx-1");
+   if(status!=null)detail.put("settlement_status",status);
+   current.set(detail);
+   com.uqpay.sdk.issuing.model.Transaction tx=issuing.getTransactions().get("tx-1");
+   assertPath(request.get(),"/v1/issuing/transactions/tx-1");
+   assertThat(tx.getTransactionId()).isEqualTo("tx-1");assertThat(tx.getSettlementStatus()).isEqualTo(status);
+  }
+  current.set(mapper.readTree("{\"data\":[{\"transaction_id\":\"tx-1\"}],\"total_pages\":1,\"total_items\":1}"));
+  com.uqpay.sdk.issuing.model.ListTransactionsRequest params=new com.uqpay.sdk.issuing.model.ListTransactionsRequest();params.setPageSize(10);params.setPageNumber(1);
+  com.uqpay.sdk.issuing.model.ListTransactionsResponse page=issuing.getTransactions().list(params);
+  assertPath(request.get(),"/v1/issuing/transactions");
+  assertThat(page.getTotalItems()).isEqualTo(1);assertThat(page.getTotalPages()).isEqualTo(1);assertThat(page.getData()).hasSize(1);
+  assertThat(page.getData().get(0).getTransactionId()).isEqualTo("tx-1");assertThat(page.getData().get(0).getSettlementStatus()).isNull();
+
  }
  private static void assertPath(Request request,String path) {
   assertThat(request.method()).isEqualTo("GET");assertThat(request.url().encodedPath()).isEqualTo(path);
