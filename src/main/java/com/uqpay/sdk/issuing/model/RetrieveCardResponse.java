@@ -205,6 +205,14 @@ public class RetrieveCardResponse {
         return Collections.emptyMap();
     }
 
+    /** Raw response metadata: an object for detail, a JSON-encoded string for list,
+     * or null. Missing fields and explicit null both return null.
+     * The legacy Map getter and its serialization behavior remain unchanged. */
+    @JsonIgnore
+    public Object getMetadataValue() {
+        return metadata;
+    }
+
     public void setMetadata(Object metadata) {
         this.metadata = metadata;
     }

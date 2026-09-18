@@ -69,3 +69,9 @@ Signed Webhook fixtures preserve raw data and reject a payload whose bytes chang
 `PayoutAcquiringData.completeTime` and `ChargebackAlertData.appealTime/responseTime` are exposed. POJOs merge missing with explicit null; use `Event.getData()` for that distinction. REST `PaymentIntent` and `Refund` retain legacy `getMetadata()` behavior (null becomes an empty Map); use `getMetadataValue()` to distinguish null from an empty object. The new accessor does not change legacy JSON serialization.
 
 Java acquiring payout/chargeback models also expose their canonical account, amount, currency, reference and alert fields while retaining legacy attributes. Numeric `payout_amount` uses `BigDecimal`; the Webhook envelope parses decimal numbers without an intermediate double. Consumers inspecting `Event.getData()` should use the numeric JsonNode API rather than assuming a DoubleNode.
+
+## Frozen Issuing response boundaries
+
+Card list metadata is a JSON-encoded string (including an empty string); detail metadata is an object or null. `RetrieveCardResponse.getMetadataValue()` exposes that original value. The existing `getMetadata()` Map view and JSON serialization remain unchanged; use the raw accessor when list metadata or the null/empty distinction matters. Missing and explicit null both return null.
+
+The shared offline fixture covers 18 card list/detail, cardholder list/detail, product list and status response cases at Spec `1feb1d26` (2026-09-17 16:30 cutoff). It checks decimal list limits, numeric detail limits, missing/empty/populated metadata, nullable list risk controls, optional summaries, empty gender/nationality, product optional fields and optional update reason. It excludes the later sparse-address contract and is not live Sandbox acceptance.
