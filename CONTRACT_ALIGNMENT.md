@@ -10,6 +10,12 @@ A response with `request_status=SUCCESS` and `order_status=PROCESSING` means the
 
 The legacy `/v1/issuing/cards/manage/pin` operation retains its existing behavior. Its `RESET` means changing with the old PIN; when migrating to the new endpoint use `UPDATE`, not `RESET`. Do not send legacy four-digit PINs to the new endpoint.
 
+### PIN eligibility and migration deadline
+
+The frozen reference contract schedules retirement of `/v1/issuing/cards/manage/pin` for **2026-10-17**. Migrate the legacy `RESET` operation to `UPDATE` on `/v1/issuing/cards/pin`. This date is the published contract schedule; these client tests do not verify Production rollout or actual endpoint retirement.
+
+The card must be active and unexpired. Wait for any PIN operation already processing on that card to finish before submitting another. The new PIN must not repeat a single digit, occur within the cardholder's phone number, or share its last four digits with the card number. For `UPDATE`, it must differ from the current PIN. These checks and card-specific operation support are server-authoritative; a typed request does not establish eligibility.
+
 ## RFI answers
 
 Send the full `rfi_id`, including its prefix. A `TEXT` answer needs non-empty `text`; an `ATTACHMENT` answer contains uploaded file IDs in `attachments`.
@@ -75,3 +81,7 @@ Java acquiring payout/chargeback models also expose their canonical account, amo
 Card list metadata is a JSON-encoded string (including an empty string); detail metadata is an object or null. `RetrieveCardResponse.getMetadataValue()` exposes that original value. The existing `getMetadata()` Map view and JSON serialization remain unchanged; use the raw accessor when list metadata or the null/empty distinction matters. Missing and explicit null both return null.
 
 The shared offline fixture covers 18 card list/detail, cardholder list/detail, product list and status response cases at Spec `1feb1d26` (2026-09-17 16:30 cutoff). It checks decimal list limits, numeric detail limits, missing/empty/populated metadata, nullable list risk controls, optional summaries, empty gender/nationality, product optional fields and optional update reason. It excludes the later sparse-address contract and is not live Sandbox acceptance.
+
+## Cardholder KYC event interpretation
+
+For `cardholder.kyc.status_changed`, use `data.cardholder_status` to determine the outcome: `SUCCESS` is approved, `FAILED` is rejected, and `INCOMPLETE` requires additional information. The optional or empty `data.reason` explains rejection or a request for more information; its presence alone does not determine the outcome.
