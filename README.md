@@ -1,5 +1,8 @@
 # UQPAY Java SDK
 
+> This branch prepares SDK/CLI **4.0.0 (unreleased)**. Review [contract migration guidance](CONTRACT_ALIGNMENT.md) before upgrading. Public downloads remain on the published version until a release is explicitly announced.
+
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Official Java SDK for the [UQPAY API](https://developers.uqpay.com/).
