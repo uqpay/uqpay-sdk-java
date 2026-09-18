@@ -51,6 +51,26 @@ class RemainingContractTest {
         }
     }
 
+    @Test
+    void routesFrozenIssuingCardholderEvents() throws Exception {
+        for (String eventType : new String[]{"cardholder.kyc.status_changed", "cardholder.updated"}) {
+            for (String status : new String[]{"SUCCESS", "FAILED", "INCOMPLETE"}) {
+                String body = "{\"event_name\":\"ISSUING\",\"event_type\":\"" + eventType
+                        + "\",\"data\":{\"cardholder_status\":\"" + status
+                        + "\",\"reason\":\"More evidence required\"}}";
+                String timestamp = String.valueOf(System.currentTimeMillis());
+                Event event = new WebhookVerifier("offline-secret")
+                        .verifyAndParse(body, sign(body, timestamp), timestamp);
+                assertThat(event.isCardholderKycEvent()).isEqualTo(eventType.equals("cardholder.kyc.status_changed"));
+                assertThat(event.isCardholderUpdatedEvent()).isEqualTo(eventType.equals("cardholder.updated"));
+                assertThat(event.parseCardholderData().getCardholderStatus()).isEqualTo(status);
+                assertThat(event.parseCardholderData().getReason()).isEqualTo("More evidence required");
+            }
+        }
+        Event unrelated = Event.fromJson("{\"event_name\":\"ISSUING\",\"event_type\":\"card.create.succeeded\",\"data\":{}}");
+        assertThatThrownBy(unrelated::parseCardholderData).isInstanceOf(IllegalStateException.class);
+    }
+
     private static Class<?> modelFor(String kind) {
         switch (kind) {
             case "representative": return Representative.class;

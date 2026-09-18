@@ -421,11 +421,15 @@ public class Event {
     }
 
     public boolean isCardholderKycEvent() {
-        return EVENT_NAME_CARDHOLDER_KYC.equals(eventName);
+        return EVENT_NAME_CARDHOLDER_KYC.equals(eventName)
+                || (EVENT_NAME_ISSUING.equals(eventName)
+                    && EVENT_TYPE_CARDHOLDER_KYC_STATUS_CHANGED.equals(eventType));
     }
 
     public boolean isCardholderUpdatedEvent() {
-        return EVENT_NAME_CARDHOLDER_UPDATED.equals(eventName);
+        return EVENT_NAME_CARDHOLDER_UPDATED.equals(eventName)
+                || (EVENT_NAME_ISSUING.equals(eventName)
+                    && EVENT_TYPE_CARDHOLDER_UPDATED.equals(eventType));
     }
 
     // =========================================================================

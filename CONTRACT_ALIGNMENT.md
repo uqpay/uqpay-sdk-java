@@ -85,3 +85,5 @@ The shared offline fixture covers 18 card list/detail, cardholder list/detail, p
 ## Cardholder KYC event interpretation
 
 For `cardholder.kyc.status_changed`, use `data.cardholder_status` to determine the outcome: `SUCCESS` is approved, `FAILED` is rejected, and `INCOMPLETE` requires additional information. The optional or empty `data.reason` explains rejection or a request for more information; its presence alone does not determine the outcome.
+
+Java cardholder event helpers accept the `ISSUING` envelope with `cardholder.kyc.status_changed` or `cardholder.updated` event types, while retaining legacy event-name recognition. Other Issuing event types remain rejected by `parseCardholderData()`.
