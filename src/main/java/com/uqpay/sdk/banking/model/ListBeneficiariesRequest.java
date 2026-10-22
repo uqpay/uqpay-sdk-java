@@ -5,6 +5,10 @@ import java.nio.charset.StandardCharsets;
 
 public class ListBeneficiariesRequest {
 
+    private String paymentMethod;
+    public String getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+
     private int pageSize; // Required. Items per page, range: 1-100
     private int pageNumber; // Required. Page number to retrieve, must be >= 1
     private String entityType; // Optional. Filter by entity type: COMPANY or INDIVIDUAL
@@ -65,6 +69,7 @@ public class ListBeneficiariesRequest {
 
     public String toQueryString() {
         StringBuilder sb = new StringBuilder();
+        if (paymentMethod != null && !paymentMethod.isEmpty()) { sb.append("payment_method=").append(encode(paymentMethod)).append("&"); }
         if (pageSize > 0) {
             sb.append("page_size=").append(pageSize).append("&");
         }

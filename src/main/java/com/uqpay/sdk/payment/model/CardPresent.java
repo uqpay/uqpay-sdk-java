@@ -88,4 +88,16 @@ public class CardPresent {
 
     public String getSystemTraceAuditNumber() { return systemTraceAuditNumber; }
     public void setSystemTraceAuditNumber(String systemTraceAuditNumber) { this.systemTraceAuditNumber = systemTraceAuditNumber; }
+
+    @JsonProperty("authorization_type")
+    private String authorizationType;
+
+    public String getAuthorizationType() { return authorizationType; }
+    public void setAuthorizationType(String value) { this.authorizationType = value; }
+
+    @JsonProperty("auto_capture")
+    private Boolean autoCapture;
+
+    public Boolean getAutoCapture() { return autoCapture; }
+    public void setAutoCapture(Boolean value) { this.autoCapture = value; }
 }

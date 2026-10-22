@@ -71,6 +71,8 @@ public class PaymentAttempt {
     public String getCurrency() { return currency; }
     public void setCurrency(String currency) { this.currency = currency; }
 
+    /** @deprecated Not returned by the current PaymentAttempt contract. */
+    @Deprecated
     public String getCapturedAmount() { return capturedAmount; }
     public void setCapturedAmount(String capturedAmount) { this.capturedAmount = capturedAmount; }
 
@@ -112,4 +114,10 @@ public class PaymentAttempt {
 
     public AuthenticationData getAuthenticationData() { return authenticationData; }
     public void setAuthenticationData(AuthenticationData authenticationData) { this.authenticationData = authenticationData; }
+
+    @JsonProperty("authorization_type")
+    private String authorizationType;
+
+    public String getAuthorizationType() { return authorizationType; }
+    public void setAuthorizationType(String value) { this.authorizationType = value; }
 }

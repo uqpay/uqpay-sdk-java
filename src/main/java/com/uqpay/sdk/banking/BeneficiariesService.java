@@ -103,6 +103,13 @@ public final class BeneficiariesService {
     @NotNull
     public ListPaymentMethodsResponse listPaymentMethods(@NotNull String currency, @NotNull String country,
                                                           @Nullable RequestOptions options) throws UqpayException {
+        return listPaymentMethods(currency, country, null, options);
+    }
+
+    /** Select recipient entity type explicitly, for example for Mastercard recipients. */
+    @NotNull
+    public ListPaymentMethodsResponse listPaymentMethods(@NotNull String currency, @NotNull String country,
+            @Nullable String entityType, @Nullable RequestOptions options) throws UqpayException {
         Objects.requireNonNull(currency, "currency must not be null");
         Objects.requireNonNull(country, "country must not be null");
         String query;
@@ -111,6 +118,10 @@ public final class BeneficiariesService {
                     + "&country=" + URLEncoder.encode(country, StandardCharsets.UTF_8.name());
         } catch (Exception e) {
             query = "?currency=" + currency + "&country=" + country;
+        }
+        if (entityType != null && !entityType.isEmpty()) {
+            try { query += "&entity_type=" + URLEncoder.encode(entityType, StandardCharsets.UTF_8.name()); }
+            catch (java.io.UnsupportedEncodingException e) { throw new IllegalStateException(e); }
         }
         return apiClient.get("/v1/beneficiaries/paymentmethods" + query,
                 ListPaymentMethodsResponse.class, options);

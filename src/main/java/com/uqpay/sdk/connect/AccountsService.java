@@ -199,6 +199,7 @@ public final class AccountsService {
      * @throws UqpayException if the request fails
      */
     @NotNull
+    @Deprecated
     public Document[] getAdditionalDocuments(@NotNull String country,
                                               @NotNull String businessCode) throws UqpayException {
         return getAdditionalDocuments(country, businessCode, null);
@@ -214,6 +215,7 @@ public final class AccountsService {
      * @throws UqpayException if the request fails
      */
     @NotNull
+    @Deprecated
     public Document[] getAdditionalDocuments(@NotNull String country,
                                               @NotNull String businessCode,
                                               @Nullable RequestOptions options)

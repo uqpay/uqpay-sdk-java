@@ -153,4 +153,9 @@ public class BeneficiaryBankDetails {
     public void setRoutingCodeValue2(String routingCodeValue2) {
         this.routingCodeValue2 = routingCodeValue2;
     }
+    @com.fasterxml.jackson.annotation.JsonProperty("card_expiry")
+    private String cardExpiry;
+
+    public String getCardExpiry() { return cardExpiry; }
+    public void setCardExpiry(String cardExpiry) { this.cardExpiry = cardExpiry; }
 }

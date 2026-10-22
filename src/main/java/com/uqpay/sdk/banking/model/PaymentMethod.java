@@ -54,4 +54,9 @@ public class PaymentMethod {
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
+    @com.fasterxml.jackson.annotation.JsonProperty("validation_field")
+    private java.util.List<com.fasterxml.jackson.databind.JsonNode> validationField;
+
+    public java.util.List<com.fasterxml.jackson.databind.JsonNode> getValidationField() { return validationField; }
+    public void setValidationField(java.util.List<com.fasterxml.jackson.databind.JsonNode> validationField) { this.validationField = validationField; }
 }

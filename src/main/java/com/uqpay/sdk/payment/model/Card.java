@@ -35,7 +35,7 @@ public class Card {
     private Boolean autoCapture; // Optional. Auto-capture payment after authorization
 
     @JsonProperty("authorization_type")
-    private String authorizationType; // Optional. Authorization type: manual or automatic
+    private String authorizationType; // Optional. Authorization type: authorization or pre_authorization
 
     @JsonProperty("three_ds_action")
     private String threeDsAction; // Optional. 3DS action: enforce_3ds, optional_3ds, or skip_3ds

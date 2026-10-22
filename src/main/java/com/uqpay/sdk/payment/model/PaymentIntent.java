@@ -22,7 +22,7 @@ public class PaymentIntent {
     private String currency; // ISO 4217 three-letter code
 
     @JsonProperty("intent_status")
-    private String paymentIntentStatus; // REQUIRES_PAYMENT_METHOD | REQUIRES_CUSTOMER_ACTION | REQUIRES_CAPTURE | PENDING | SUCCEEDED | CANCELLED | FAILED
+    private String paymentIntentStatus; // REQUIRES_PAYMENT_METHOD | REQUIRES_CUSTOMER_ACTION | REQUIRES_CAPTURE | PENDING | SUCCEEDED | CANCELLED | FAILED | PARTIALLY_CAPTURED | EXPIRED
 
     @JsonProperty("merchant_order_id")
     private String merchantOrderId;
@@ -134,4 +134,52 @@ public class PaymentIntent {
 
     public String getCompleteTime() { return completeTime; }
     public void setCompleteTime(String completeTime) { this.completeTime = completeTime; }
+
+    @JsonProperty("authorization_type")
+    private String authorizationType;
+
+    public String getAuthorizationType() { return authorizationType; }
+    public void setAuthorizationType(String value) { this.authorizationType = value; }
+
+    @JsonProperty("capture_id")
+    private String captureId;
+
+    public String getCaptureId() { return captureId; }
+    public void setCaptureId(String value) { this.captureId = value; }
+
+    @JsonProperty("merchant_capture_order_id")
+    private String merchantCaptureOrderId;
+
+    public String getMerchantCaptureOrderId() { return merchantCaptureOrderId; }
+    public void setMerchantCaptureOrderId(String value) { this.merchantCaptureOrderId = value; }
+
+    @JsonProperty("authorization_expires_at")
+    private String authorizationExpiresAt;
+
+    public String getAuthorizationExpiresAt() { return authorizationExpiresAt; }
+    public void setAuthorizationExpiresAt(String value) { this.authorizationExpiresAt = value; }
+
+    @JsonProperty("available_to_capture")
+    private String availableToCapture;
+
+    public String getAvailableToCapture() { return availableToCapture; }
+    public void setAvailableToCapture(String value) { this.availableToCapture = value; }
+
+    @JsonProperty("available_to_void")
+    private String availableToVoid;
+
+    public String getAvailableToVoid() { return availableToVoid; }
+    public void setAvailableToVoid(String value) { this.availableToVoid = value; }
+
+    @JsonProperty("current_funds_action")
+    private Map<String, Object> currentFundsAction;
+
+    public Map<String, Object> getCurrentFundsAction() { return currentFundsAction; }
+    public void setCurrentFundsAction(Map<String, Object> value) { this.currentFundsAction = value; }
+
+    @JsonProperty("capture_records")
+    private List<CaptureRecord> captureRecords;
+
+    public List<CaptureRecord> getCaptureRecords() { return captureRecords; }
+    public void setCaptureRecords(List<CaptureRecord> value) { this.captureRecords = value; }
 }

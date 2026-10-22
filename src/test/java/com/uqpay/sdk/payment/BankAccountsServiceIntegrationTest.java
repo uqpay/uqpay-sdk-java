@@ -50,20 +50,14 @@ class BankAccountsServiceIntegrationTest {
             request.setBankAddress("12 Marina Boulevard, Singapore 018982");
             request.setCurrency("USD");
 
-            try {
-                BankAccount account = bankAccountsService.create(request);
+            BankAccount account = bankAccountsService.create(request);
 
-                assertThat(account).isNotNull();
-                assertThat(account.getId()).isNotEmpty();
-                assertThat(account.getCurrency()).isEqualTo("USD");
+            assertThat(account).isNotNull();
+            assertThat(account.getId()).isNotEmpty();
+            assertThat(account.getCurrency()).isEqualTo("USD");
 
-                System.out.printf("Bank account created: ID=%s, Currency=%s, Bank=%s, Status=%s%n",
-                        account.getId(), account.getCurrency(), account.getBankName(), account.getAccountStatus());
-            } catch (UqpayException e) {
-                // May fail if bank account already exists for this currency in sandbox
-                System.out.printf("Create bank account returned error (may be expected in sandbox): %s%n",
-                        e.getMessage());
-            }
+            System.out.printf("Bank account created: ID=%s, Currency=%s, Bank=%s, Status=%s%n",
+                    account.getId(), account.getCurrency(), account.getBankName(), account.getAccountStatus());
         }
     }
 
