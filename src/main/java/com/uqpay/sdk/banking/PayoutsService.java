@@ -1,6 +1,8 @@
 package com.uqpay.sdk.banking;
 
 import com.uqpay.sdk.banking.model.CreatePayoutRequest;
+import com.uqpay.sdk.banking.model.ValidatePayoutRequest;
+import com.uqpay.sdk.banking.model.ValidatePayoutResponse;
 import com.uqpay.sdk.banking.model.CreatePayoutResponse;
 import com.uqpay.sdk.banking.model.ListPayoutsRequest;
 import com.uqpay.sdk.banking.model.ListPayoutsResponse;
@@ -59,5 +61,16 @@ public final class PayoutsService {
         Objects.requireNonNull(request, "request must not be null");
         String queryString = request.toQueryString();
         return apiClient.get("/v1/payouts" + queryString, ListPayoutsResponse.class, options);
+    }
+    @NotNull
+    public ValidatePayoutResponse validate(@NotNull ValidatePayoutRequest request) throws UqpayException {
+        return validate(request, null);
+    }
+
+    @NotNull
+    public ValidatePayoutResponse validate(@NotNull ValidatePayoutRequest request, @Nullable RequestOptions options)
+            throws UqpayException {
+        Objects.requireNonNull(request, "request must not be null");
+        return apiClient.get("/v1/payouts/validation" + request.toQueryString(), ValidatePayoutResponse.class, options);
     }
 }

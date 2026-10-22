@@ -34,4 +34,10 @@ public class ConfirmPaymentIntentRequest {
 
     public BrowserInfo getBrowserInfo() { return browserInfo; }
     public void setBrowserInfo(BrowserInfo browserInfo) { this.browserInfo = browserInfo; }
+
+    @JsonProperty("authorization_type")
+    private String authorizationType;
+
+    public String getAuthorizationType() { return authorizationType; }
+    public void setAuthorizationType(String value) { this.authorizationType = value; }
 }

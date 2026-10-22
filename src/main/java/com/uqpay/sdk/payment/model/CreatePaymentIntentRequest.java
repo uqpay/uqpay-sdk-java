@@ -127,4 +127,10 @@ public class CreatePaymentIntentRequest {
     public void setPaymentOrders(PaymentOrders paymentOrders) {
         this.paymentOrders = paymentOrders;
     }
+
+    @JsonProperty("authorization_type")
+    private String authorizationType;
+
+    public String getAuthorizationType() { return authorizationType; }
+    public void setAuthorizationType(String value) { this.authorizationType = value; }
 }

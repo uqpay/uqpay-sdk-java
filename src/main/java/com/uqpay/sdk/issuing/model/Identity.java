@@ -23,6 +23,18 @@ public class Identity {
     @JsonProperty("hand_file")
     private String handFile;
 
+    @JsonProperty("proof_of_address")
+    private String proofOfAddress;
+
+    @JsonProperty("proof_of_address_issue_date")
+    private String proofOfAddressIssueDate;
+
+    @JsonProperty("proof_of_address_issuing_country")
+    private String proofOfAddressIssuingCountry;
+
+    @JsonProperty("identity_verification")
+    private String identityVerification;
+
     public Identity() {
     }
 
@@ -64,5 +76,37 @@ public class Identity {
 
     public void setHandFile(String handFile) {
         this.handFile = handFile;
+    }
+
+    public String getProofOfAddress() {
+        return proofOfAddress;
+    }
+
+    public void setProofOfAddress(String proofOfAddress) {
+        this.proofOfAddress = proofOfAddress;
+    }
+
+    public String getProofOfAddressIssueDate() {
+        return proofOfAddressIssueDate;
+    }
+
+    public void setProofOfAddressIssueDate(String proofOfAddressIssueDate) {
+        this.proofOfAddressIssueDate = proofOfAddressIssueDate;
+    }
+
+    public String getProofOfAddressIssuingCountry() {
+        return proofOfAddressIssuingCountry;
+    }
+
+    public void setProofOfAddressIssuingCountry(String proofOfAddressIssuingCountry) {
+        this.proofOfAddressIssuingCountry = proofOfAddressIssuingCountry;
+    }
+
+    public String getIdentityVerification() {
+        return identityVerification;
+    }
+
+    public void setIdentityVerification(String identityVerification) {
+        this.identityVerification = identityVerification;
     }
 }

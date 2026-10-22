@@ -128,6 +128,8 @@ public class PaymentAttemptData {
         this.paymentMethod = paymentMethod;
     }
 
+    /** @deprecated Not returned by the current PaymentAttempt contract. */
+    @Deprecated
     public String getCapturedAmount() {
         return capturedAmount;
     }

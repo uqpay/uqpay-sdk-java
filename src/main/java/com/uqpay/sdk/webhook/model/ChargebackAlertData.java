@@ -166,4 +166,28 @@ public class ChargebackAlertData {
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
+
+    @JsonProperty("card_scheme")
+    private String cardScheme;
+
+    public String getCardScheme() { return cardScheme; }
+    public void setCardScheme(String value) { this.cardScheme = value; }
+
+    @JsonProperty("card_masked")
+    private String cardMasked;
+
+    public String getCardMasked() { return cardMasked; }
+    public void setCardMasked(String value) { this.cardMasked = value; }
+
+    @JsonProperty("auth_code")
+    private String authCode;
+
+    public String getAuthCode() { return authCode; }
+    public void setAuthCode(String value) { this.authCode = value; }
+
+    @JsonProperty("arn")
+    private String arn;
+
+    public String getArn() { return arn; }
+    public void setArn(String value) { this.arn = value; }
 }

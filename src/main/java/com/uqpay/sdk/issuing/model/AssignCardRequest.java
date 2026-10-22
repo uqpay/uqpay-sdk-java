@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AssignCardRequest {
 
     @JsonProperty("cardholder_id")
-    private String cardholderId; // required; UUID
+    private String cardholderId; // Optional for Business Visa: defaults to the company authorized person.
 
     @JsonProperty("card_number")
     private String cardNumber; // required; full card number

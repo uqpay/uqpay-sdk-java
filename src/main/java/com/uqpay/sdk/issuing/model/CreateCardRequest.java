@@ -18,7 +18,7 @@ public class CreateCardRequest {
     private String cardCurrency; // required; SGD or USD
 
     @JsonProperty("cardholder_id")
-    private String cardholderId; // required; UUID
+    private String cardholderId; // Optional for one-step issuance or the Business Visa company authorized person.
 
     @JsonProperty("card_product_id")
     private String cardProductId; // required; UUID
