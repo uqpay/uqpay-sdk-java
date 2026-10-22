@@ -19,6 +19,10 @@ Targeted regressions exercise request method/path, serialization, response decod
 
 `ValidatePayoutRequest/Response`, `CaptureRecord`, cardholder supporting fields and beneficiary card expiry are available through the existing clients. Payment-method validation rules use `List<JsonNode>` so strings and objects both survive decoding. The new four-argument payment-method overload accepts `entityType` without making existing three-argument calls with null ambiguous. Capture retains the `PaymentIntent` return type with additional capture fields. Authentication unit tests use a local mock server; the touched bank-account integration test propagates API failures.
 
+### Cross-client contract details
+
+Assignment accepts optional `metadata.card_sku_code` for Personal Visa. Existing requests without metadata continue to omit it; the SDK does not require this product-specific field for other products.
+
 ## Published 3.1.0 baseline
 
 Compatibility cohort: **3.1.0**. This release preserves the 4.0.0 API behavior under the 3.x version line. It does not restore the 3.0.0 API contract; the migration requirements below still apply.

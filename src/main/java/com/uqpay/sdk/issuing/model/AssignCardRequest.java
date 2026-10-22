@@ -3,6 +3,7 @@ package com.uqpay.sdk.issuing.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +20,18 @@ public class AssignCardRequest {
 
     @JsonProperty("card_mode")
     private String cardMode; // required; SINGLE | SHARE
+
+    /** Personal Visa requires card_sku_code (exactly 12 characters); omit for other products. */
+    @JsonProperty("metadata")
+    private Map<String, String> metadata;
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
 
     public AssignCardRequest() {
     }
