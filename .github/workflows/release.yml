@@ -113,7 +113,7 @@ jobs:
               -Dpackaging=jar
             ```
 
-            See [README.md](https://github.com/uqpay/uqpay-sdk-java/blob/main/README.md) for usage instructions.
+            See [CHANGELOG.md](https://github.com/uqpay/uqpay-sdk-java/blob/${{ github.ref_name }}/CHANGELOG.md) for versioned release notes, [migration guidance](https://github.com/uqpay/uqpay-sdk-java/blob/${{ github.ref_name }}/CONTRACT_ALIGNMENT.md), and [README.md](https://github.com/uqpay/uqpay-sdk-java/blob/${{ github.ref_name }}/README.md) for usage instructions.
           files: release-jars/*.jar
           draft: false
           prerelease: false

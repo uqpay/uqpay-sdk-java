@@ -1,8 +1,8 @@
 # API contract alignment
 
-## Unreleased contract update
+## Version 3.2.0 — migration from 3.1.0
 
-This source update targets [English v1.6 contract `16d84adb`](https://github.com/uqpay/uqpay-docs/tree/16d84adb1a6275004c5e223ddcc18d64feedfc8e/docs), compared with the 3.1.0 contract `1feb1d26d032c53b79ab44a7d48e88c9a91d397d`. Package version metadata remains 3.1.0 for development; these changes are not a published 3.1.0 artifact. A future coordinated release requires a new MINOR version under the SDK version policy.
+This source update targets [English v1.6 contract `16d84adb`](https://github.com/uqpay/uqpay-docs/tree/16d84adb1a6275004c5e223ddcc18d64feedfc8e/docs), compared with the 3.1.0 contract `1feb1d26d032c53b79ab44a7d48e88c9a91d397d`. Compatibility baseline: [`v3.1.0` (`af741966`)](https://github.com/uqpay/uqpay-sdk-java/tree/af741966c9a1e28e74783acd0dfb6f9857278c51). This is a MINOR release under UQPAY's coordinated `3.MINOR.PATCH` policy; MINOR does not imply source compatibility. Runtime floors and dependencies are unchanged.
 
 - Banking: CARD beneficiaries and expiry, optional payment-method entity filtering, mixed validation rule objects, optional payout reference/fee/date, and `GET /v1/payouts/validation`. Validation checks a saved beneficiary and funds without reserving funds or guaranteeing later success. The target operation lists a Sandbox server; Production availability is unverified.
 - Issuing: cardholder supporting documents (`proof_of_address`, its issue date/country, and `identity_verification`), supporting-only updates, sparse response addresses, and omitted cardholder IDs for Business Visa default-holder issuance/assignment. Personal and other product requirements remain server-authoritative. One-step inline cardholder identity is not extended by the supporting-document contract.
@@ -14,6 +14,12 @@ Length/date/enum constraints moved from descriptions into schema do not add clie
 ### Verification boundary
 
 Targeted regressions exercise request method/path, serialization, response decoding and local webhook payloads with synthetic data. Tests and candidate-package consumers do not establish live API deployment, permissions, channel execution, webhook delivery or financial reconciliation. Live integration tests are skipped when disabled or missing credentials; a skipped test is not a passed business flow. Known historical integration tests outside this update still require review before being used as end-to-end acceptance evidence.
+
+### Migration from 3.1.0
+
+The added `PaymentMethod.getValidationField()` returns `List<JsonNode>`; handle textual and object entries when adopting it. The 3.1.0 model had no validation-rule accessor, so no existing accessor is removed or retyped. Existing three-argument calls with null options remain unambiguous. Keep using decimal strings for capture requests; new capture response fields are optional. Business Visa can omit the cardholder ID; Personal Visa assignment requires `metadata.card_sku_code` where the server requires it. Earlier migration requirements below remain cumulative.
+
+Download `uqpay-sdk-java-3.2.0.jar` from the [v3.2.0 GitHub Release](https://github.com/uqpay/uqpay-sdk-java/releases/tag/v3.2.0) and install it locally with the matching POM or declare its Jackson, OkHttp and Bouncy Castle runtime dependencies. `com.uqpay.sdk:uqpay-sdk-java:3.2.0` is not available from Maven Central.
 
 ### Model additions
 
