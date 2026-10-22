@@ -4,10 +4,22 @@ import com.uqpay.sdk.TestHelper;
 import com.uqpay.sdk.common.UqpayAuthException;
 import com.uqpay.sdk.config.Configuration;
 import com.uqpay.sdk.config.Environment;
+import okhttp3.OkHttpClient;
+import okhttp3.mockwebserver.Dispatcher;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,47 +60,167 @@ class DefaultTokenProviderTest {
             assertThat(provider).isNotNull();
         }
 
-        @Test
-        @DisplayName("should throw auth exception for invalid credentials")
-        void shouldThrowAuthExceptionForInvalidCredentials() {
-            DefaultTokenProvider provider = new DefaultTokenProvider(
-                    Environment.SANDBOX.getBaseUrl(),
-                    "invalid-client-id",
-                    "invalid-api-key",
-                    null
-            );
+        private MockWebServer server;
 
-            assertThatThrownBy(provider::getToken)
-                    .isInstanceOf(UqpayAuthException.class);
+        @BeforeEach
+        void startServer() throws IOException {
+            server = new MockWebServer();
+            // Unexpected extra fetches fail immediately instead of waiting for a queued response.
+            server.setDispatcher(new Dispatcher() {
+                @Override
+                public MockResponse dispatch(RecordedRequest request) {
+                    return new MockResponse().setResponseCode(500);
+                }
+            });
+            server.start();
+        }
+
+        @AfterEach
+        void stopServer() throws IOException {
+            server.shutdown();
+        }
+
+        private DefaultTokenProvider provider(String clientId, String apiKey) {
+            return new DefaultTokenProvider(server.url("/api").toString(), clientId, apiKey,
+                    new OkHttpClient.Builder().callTimeout(5, TimeUnit.SECONDS).build());
+        }
+
+        private void respondWithTokens(long firstExpiry) {
+            AtomicInteger calls = new AtomicInteger();
+            server.setDispatcher(new Dispatcher() {
+                @Override
+                public MockResponse dispatch(RecordedRequest request) {
+                    boolean first = calls.incrementAndGet() == 1;
+                    return new MockResponse().setHeader("Content-Type", "application/json")
+                            .setBody("{\"auth_token\":\"" + (first ? "first-token" : "refreshed-token")
+                                    + "\",\"expired_at\":"
+                                    + (first ? firstExpiry : Instant.now().plusSeconds(3600).getEpochSecond()) + "}");
+                }
+            });
         }
 
         @Test
-        @DisplayName("should throw auth exception for empty credentials")
-        void shouldThrowAuthExceptionForEmptyCredentials() {
-            DefaultTokenProvider provider = new DefaultTokenProvider(
-                    Environment.SANDBOX.getBaseUrl(),
-                    "",
-                    "",
-                    null
-            );
-
-            assertThatThrownBy(provider::getToken)
-                    .isInstanceOf(UqpayAuthException.class);
+        @DisplayName("should throw auth exception for invalid credentials using local response")
+        void shouldThrowAuthExceptionForInvalidCredentials() throws Exception {
+            assertRejectedCredentials("invalid-client-id", "invalid-api-key");
         }
 
         @Test
-        @DisplayName("should throw auth exception for invalid base URL")
-        void shouldThrowAuthExceptionForInvalidBaseUrl() {
-            DefaultTokenProvider provider = new DefaultTokenProvider(
-                    "https://invalid-url.example.com/api",
-                    "client",
-                    "key",
-                    null
-            );
-
-            assertThatThrownBy(provider::getToken)
-                    .isInstanceOf(UqpayAuthException.class);
+        @DisplayName("should throw auth exception for empty credentials using local response")
+        void shouldThrowAuthExceptionForEmptyCredentials() throws Exception {
+            assertRejectedCredentials("", "");
         }
+
+        private void assertRejectedCredentials(String clientId, String apiKey) throws Exception {
+            server.setDispatcher(new Dispatcher() {
+                @Override
+                public MockResponse dispatch(RecordedRequest request) {
+                    return new MockResponse().setResponseCode(401).setBody("unauthorized");
+                }
+            });
+            assertThatThrownBy(provider(clientId, apiKey)::getToken)
+                    .isInstanceOf(UqpayAuthException.class)
+                    .hasMessageContaining("status 401");
+            RecordedRequest request = server.takeRequest(1, TimeUnit.SECONDS);
+            assertThat(request).isNotNull();
+            assertThat(request.getHeader("x-client-id")).isEqualTo(clientId);
+            assertThat(request.getHeader("x-api-key")).isEqualTo(apiKey);
+            assertThat(server.getRequestCount()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("should wrap local transport failure without DNS or network access")
+        void shouldWrapTransportFailure() {
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(chain -> { throw new IOException("local transport failure"); })
+                    .build();
+            DefaultTokenProvider provider = new DefaultTokenProvider(
+                    server.url("/api").toString(), "client", "key", client);
+            assertThatThrownBy(provider::getToken)
+                    .isInstanceOf(UqpayAuthException.class)
+                    .hasCauseInstanceOf(IOException.class)
+                    .hasMessageContaining("local transport failure");
+            assertThat(server.getRequestCount()).isZero();
+        }
+
+        @Test
+        void shouldCacheTokenAndSendAuthenticationHeaders() throws Exception {
+            respondWithTokens(Instant.now().plusSeconds(3600).getEpochSecond());
+            DefaultTokenProvider provider = provider("test-client", "test-key");
+            assertThat(provider.getToken()).isEqualTo("first-token");
+            assertThat(provider.getToken()).isEqualTo("first-token");
+            assertThat(server.getRequestCount()).isEqualTo(1);
+            RecordedRequest request = server.takeRequest(1, TimeUnit.SECONDS);
+            assertThat(request).isNotNull();
+            assertThat(request.getMethod()).isEqualTo("POST");
+            assertThat(request.getPath()).isEqualTo("/api/v1/connect/token");
+            assertThat(request.getHeader("Accept")).isEqualTo("application/json");
+            assertThat(request.getHeader("x-client-id")).isEqualTo("test-client");
+            assertThat(request.getHeader("x-api-key")).isEqualTo("test-key");
+        }
+
+        @Test
+        void shouldRefreshExpiredToken() throws Exception {
+            assertTokenRefresh(-3600);
+        }
+
+        @Test
+        void shouldRefreshTokenInsideRefreshBuffer() throws Exception {
+            assertTokenRefresh(60);
+        }
+
+        private void assertTokenRefresh(long secondsUntilExpiry) throws Exception {
+            respondWithTokens(Instant.now().plusSeconds(secondsUntilExpiry).getEpochSecond());
+            DefaultTokenProvider provider = provider("test-client", "test-key");
+            assertThat(provider.getToken()).isEqualTo("first-token");
+            assertThat(provider.getToken()).isEqualTo("refreshed-token");
+            assertThat(provider.getToken()).isEqualTo("refreshed-token");
+            assertThat(server.getRequestCount()).isEqualTo(2);
+        }
+
+        @Test
+        void shouldRefetchAfterInvalidation() throws Exception {
+            respondWithTokens(Instant.now().plusSeconds(3600).getEpochSecond());
+            DefaultTokenProvider provider = provider("test-client", "test-key");
+            assertThat(provider.getToken()).isEqualTo("first-token");
+            provider.invalidateToken();
+            assertThat(provider.getToken()).isEqualTo("refreshed-token");
+            assertThat(provider.getToken()).isEqualTo("refreshed-token");
+            assertThat(server.getRequestCount()).isEqualTo(2);
+        }
+
+        @Test
+        void shouldFetchOnlyOnceForConcurrentCalls() throws Exception {
+            respondWithTokens(Instant.now().plusSeconds(3600).getEpochSecond());
+            DefaultTokenProvider provider = provider("test-client", "test-key");
+            int workers = 10;
+            ExecutorService executor = Executors.newFixedThreadPool(workers);
+            CountDownLatch ready = new CountDownLatch(workers);
+            CountDownLatch start = new CountDownLatch(1);
+            List<Future<String>> results = new ArrayList<>();
+            try {
+                for (int i = 0; i < workers; i++) {
+                    results.add(executor.submit(() -> {
+                        ready.countDown();
+                        if (!start.await(5, TimeUnit.SECONDS)) {
+                            throw new IllegalStateException("start barrier timed out");
+                        }
+                        return provider.getToken();
+                    }));
+                }
+                assertThat(ready.await(5, TimeUnit.SECONDS)).isTrue();
+                start.countDown();
+                for (Future<String> result : results) {
+                    assertThat(result.get(10, TimeUnit.SECONDS)).isEqualTo("first-token");
+                }
+                assertThat(server.getRequestCount()).isEqualTo(1);
+            } finally {
+                start.countDown();
+                executor.shutdownNow();
+                assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue();
+            }
+        }
+
     }
 
     @Nested
