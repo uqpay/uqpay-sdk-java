@@ -3,7 +3,37 @@
 All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Versions follow UQPAY's coordinated `3.MINOR.PATCH` policy. MAJOR remains 3;
+MINOR can require migration. Pin an exact version and review its migration notes.
+
+## [3.2.0]
+
+### Added
+
+- Align Banking CARD beneficiaries and expiry, entity/payment-method filtering,
+  mixed validation rules, and payout validation with English v1.6 contract
+  [`16d84adb`](https://github.com/uqpay/uqpay-docs/tree/16d84adb1a6275004c5e223ddcc18d64feedfc8e/docs).
+- Add Issuing cardholder supporting documents, Business Visa default-holder
+  omission, and optional Personal Visa assignment `metadata.card_sku_code`.
+- Expose Acquiring authorization/capture options, capture references and records,
+  authorization balances/expiry and updated payment intent states.
+
+### Fixed
+
+- Preserve omitted company supporting documents, sparse request/response fields,
+  and optional decision values without inventing business defaults.
+- Exercise authentication and affected public entry points with offline fixtures;
+  disabled integration tests do not establish live API acceptance.
+
+### Migration from 3.1.0 and distribution
+
+- The added payment-method validation-rule accessor uses `List<JsonNode>`;
+  handle textual and object entries when adopting it. No existing accessor is
+  retyped. Existing null-option calls remain valid. See [3.2.0 migration guidance](CONTRACT_ALIGNMENT.md#version-320--migration-from-310).
+- Download `uqpay-sdk-java-3.2.0.jar` from the GitHub `v3.2.0` Release and install
+  it with `mvn install:install-file` or an equivalent local repository workflow.
+  This thin JAR is not available from Maven Central; declare Jackson, OkHttp and
+  Bouncy Castle runtime dependencies separately. Runtime support is unchanged.
 
 ## [3.1.0]
 
